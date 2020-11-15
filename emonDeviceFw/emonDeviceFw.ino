@@ -1,5 +1,5 @@
-#include "src/userapp/EnergyMonitor.h"
-#include "src/userapp/config/EnergyMonitorConfig.h"
+#include "src/EnergyMonitor.h"
+#include "src/config/EnergyMonitorConfig.h"
 
 #ifdef ESP32
 #include "SPIFFS.h"

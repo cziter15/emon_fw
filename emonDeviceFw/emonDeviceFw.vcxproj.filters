@@ -9,42 +9,39 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Source Files\userapp">
-      <UniqueIdentifier>{964137ed-f467-4c87-8c41-64d3ab342c3a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\userapp\config">
-      <UniqueIdentifier>{9368a436-a407-4c7b-b6fa-babaca0346a5}</UniqueIdentifier>
+    <Filter Include="Source Files\config">
+      <UniqueIdentifier>{3a80e548-3ff7-4625-8c2d-2b2fb41b4b46}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="emonDeviceFw.ino" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\userapp\board.h">
-      <Filter>Source Files\userapp\config</Filter>
-    </ClInclude>
-    <ClInclude Include="src\userapp\config\EnergyMonitorConfig.h">
-      <Filter>Source Files\userapp\config</Filter>
-    </ClInclude>
-    <ClInclude Include="src\userapp\config\EnergyMonitorConfigProvider.h">
-      <Filter>Source Files\userapp\config</Filter>
-    </ClInclude>
-    <ClInclude Include="src\userapp\EnergyMonitor.h">
-      <Filter>Source Files\userapp</Filter>
-    </ClInclude>
     <ClInclude Include="__vm\.emonDeviceFw.vsarduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\board.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EnergyMonitor.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\config\EnergyMonitorConfig.h">
+      <Filter>Source Files\config</Filter>
+    </ClInclude>
+    <ClInclude Include="src\config\EnergyMonitorConfigProvider.h">
+      <Filter>Source Files\config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\userapp\config\EnergyMonitorConfig.cpp">
-      <Filter>Source Files\userapp\config</Filter>
+    <ClCompile Include="src\EnergyMonitor.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\userapp\config\EnergyMonitorConfigProvider.cpp">
-      <Filter>Source Files\userapp\config</Filter>
+    <ClCompile Include="src\config\EnergyMonitorConfig.cpp">
+      <Filter>Source Files\config</Filter>
     </ClCompile>
-    <ClCompile Include="src\userapp\EnergyMonitor.cpp">
-      <Filter>Source Files\userapp</Filter>
+    <ClCompile Include="src\config\EnergyMonitorConfigProvider.cpp">
+      <Filter>Source Files\config</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
