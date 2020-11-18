@@ -138,10 +138,12 @@ void EnergyMonitor::onBlackLineSensorTimer()
 
 	lastRecordsAverage /= EMON_SENSOR_PROBES;
 
-	if (wantUpper && (analog_value / lastRecordsAverage > EMON_SENSOR_UP_TRESHOLD))
+	float currentDeviation = analog_value / lastRecordsAverage;
+
+	if (wantUpper && (currentDeviation > EMON_SENSOR_UP_TRESHOLD))
 		wantUpper = false;
 
-	if (!wantUpper && (analog_value / lastRecordsAverage < EMON_SENSOR_DOWN_TRESHOLD))
+	if (!wantUpper && (currentDeviation < EMON_SENSOR_DOWN_TRESHOLD))
 	{
 		blackLineDetected();
 		wantUpper = true;
