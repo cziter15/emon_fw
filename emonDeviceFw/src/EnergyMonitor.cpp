@@ -60,6 +60,8 @@ void EnergyMonitor::onMqttConnected()
 
 	mqtt->subscribe("totalkWh");
 	mqtt->subscribe("clearkwh");
+
+	mqtt->subscribe("dbg");
 }
 
 void EnergyMonitor::onMqttMessage(const String& topic, const String& payload)
@@ -85,6 +87,10 @@ void EnergyMonitor::onMqttMessage(const String& topic, const String& payload)
 
 			mqtt->publish("kWhResetTime", date);
 		}
+	}
+	else if (topic.equals("dbg"))
+	{
+		debug_mode = (debug_mode_type::TYPE)payload.toInt();
 	}
 }
 
@@ -112,7 +118,11 @@ void EnergyMonitor::onAvgCalculationTimer()
 void EnergyMonitor::updateWatts(double currentWatts)
 {
 	curWatts = currentWatts;
-	mqtt->publish("watts", String(curWatts, 0));
+
+	/* If no debug, send calculated watts */
+	if (debug_mode == debug_mode_type::NONE)
+		mqtt->publish("watts", String(curWatts, 0));
+
 	prevPulseAtMillis = millis();
 }
 
@@ -140,14 +150,23 @@ void EnergyMonitor::onBlackLineSensorTimer()
 
 	float currentDeviation = analog_value / lastRecordsAverage;
 
-	if (wantUpper && (currentDeviation > EMON_SENSOR_UP_TRESHOLD))
-		wantUpper = false;
+	switch (debug_mode)
+	{
+		case debug_mode_type::DEVIATION:	mqtt->publish("watts", String(currentDeviation, 2));		break;
+		case debug_mode_type::RAW_VALUE:	mqtt->publish("watts", String(analog_value, 2));			break;
+		case debug_mode_type::AVG_VALUES:	mqtt->publish("watts", String(lastRecordsAverage, 2));		break;
+	}
 
-	if (!wantUpper && (currentDeviation < EMON_SENSOR_DOWN_TRESHOLD))
+	/* Spike detected, means black line is under sensor. */
+	if (wantUpper && (currentDeviation > EMON_SENSOR_SPIKE_TRESHOLD))
 	{
 		blackLineDetected();
-		wantUpper = true;
+		wantUpper = false;
 	}
+	
+	/* Here it stabilizes, means black line moved away, so we can count this rotation. */
+	if (!wantUpper && (fabsf(currentDeviation - 1.0f) <= 0.1f))
+		wantUpper = true;
 
 	if (millis() - prevPulseAtMillis > EMON_SENSOR_TIMEOUT)
 		updateWatts(0);

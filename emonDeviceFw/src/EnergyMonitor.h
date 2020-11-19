@@ -3,9 +3,8 @@
 #include <ksIotFrameworkLib.h>
 
 #define EMON_SENSOR_PROBES 20
-#define EMON_SENSOR_UP_TRESHOLD 1.2f
-#define EMON_SENSOR_DOWN_TRESHOLD 1.0f
-#define EMON_TIMER_INTERVAL 75
+#define EMON_SENSOR_SPIKE_TRESHOLD 1.3f
+#define EMON_TIMER_INTERVAL 50
 #define EMON_SEC_TIMER 1000
 #define EMON_SENSOR_TIMEOUT 600000UL
 
@@ -16,9 +15,22 @@ namespace ksf
 	class ksLed;
 }
 
+namespace debug_mode_type
+{
+	enum TYPE
+	{
+		NONE = 0,
+		DEVIATION,
+		RAW_VALUE,
+		AVG_VALUES
+	};
+}
+
 class EnergyMonitor : public ksf::ksApplication
 {
 	protected:
+		debug_mode_type::TYPE debug_mode = debug_mode_type::NONE;
+
 		std::shared_ptr<ksf::ksMqttConnector> mqtt;
 
 		std::shared_ptr<ksf::ksLed> statusLed, eventLed;
