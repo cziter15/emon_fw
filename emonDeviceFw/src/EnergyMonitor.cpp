@@ -42,10 +42,6 @@ bool EnergyMonitor::init()
 
 	pinMode(A0, INPUT);
 
-	/* Set all sensor probes to USHRT_MAX to prevent fake detections */
-	for (unsigned int idx = 0; idx < EMON_SENSOR_PROBES; ++idx)
-		buffered_values[idx] = USHRT_MAX;
-
 	return true;
 }
 
@@ -157,16 +153,32 @@ void EnergyMonitor::onBlackLineSensorTimer()
 		case debug_mode_type::AVG_VALUES:	mqtt->publish("watts", String(lastRecordsAverage, 2));		break;
 	}
 
-	/* Spike detected, means black line is under sensor. */
-	if (wantUpper && (currentDeviation > EMON_SENSOR_SPIKE_TRESHOLD))
+	switch (current_curve_state)
 	{
-		blackLineDetected();
-		wantUpper = false;
+		case curve_state::WAIT_PREWARM:
+			if (last_val_idx > EMON_SENSOR_PROBES)
+				current_curve_state = curve_state::WAIT_STABILIZE;
+		break;
+
+		case curve_state::WAIT_STABILIZE:
+			if (fabsf(currentDeviation - 1.0f) <= 0.05f)
+				current_curve_state = curve_state::WAIT_UP;
+		break;
+
+		case curve_state::WAIT_UP:
+			if (currentDeviation > EMON_UP_TRESHOLD)
+			{
+				current_curve_state = curve_state::WAIT_FALL;
+				blackLineDetected();
+			}
+		break;
+
+		case curve_state::WAIT_FALL:
+			if (currentDeviation < EMON_DOWN_TRESHOLD)
+				current_curve_state = curve_state::WAIT_STABILIZE;
+		break;
+
 	}
-	
-	/* Here it stabilizes, means black line moved away, so we can count this rotation. */
-	if (!wantUpper && (fabsf(currentDeviation - 1.0f) <= 0.1f))
-		wantUpper = true;
 
 	if (millis() - prevPulseAtMillis > EMON_SENSOR_TIMEOUT)
 		updateWatts(0);
