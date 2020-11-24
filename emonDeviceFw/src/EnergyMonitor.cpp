@@ -102,7 +102,7 @@ void EnergyMonitor::onAvgCalculationTimer()
 			double avg5minWatts = accumulativeWatts / secondsCounter;
 			mqtt->publish("5minAvgWatts", String(avg5minWatts, 0));
 
-			double totalkWh = pulseCount / (double)rotationsPerKwh + initialKwh;
+			double totalkWh = (double)pulseCount / (double)rotationsPerKwh + initialKwh;
 			mqtt->publish("totalkWh", String(totalkWh), true);
 
 			secondsCounter = 0;
