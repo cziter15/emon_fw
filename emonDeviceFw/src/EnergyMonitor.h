@@ -44,7 +44,7 @@ class EnergyMonitor : public ksf::ksApplication
 {
 	protected:
 		debug_mode_type::TYPE debug_mode = debug_mode_type::NONE;
-		curve_state::TYPE current_curve_state = curve_state::WAIT_FALL;
+		curve_state::TYPE current_curve_state = curve_state::WAIT_PREWARM;
 
 		std::shared_ptr<ksf::ksMqttConnector> mqtt;
 
