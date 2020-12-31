@@ -8,6 +8,9 @@ Second revision uses ADC instead, so I can detect rotations more precisely. From
 
 Along with hardware-part, I'm working on software - framework for IoT devices like this one, so end user application might be developed fairly quick!
 
+# See project on hackaday
+https://hackaday.io/project/175653-iot-for-old-energy-meter
+
 # In action ...
 
 <p align="center">
@@ -17,5 +20,3 @@ Along with hardware-part, I'm working on software - framework for IoT devices li
 <p align="center">
   <img src="docfiles/pcb.jpg">
 </p>
-
-https://hackaday.io/project/175653-iot-for-old-energy-meter
