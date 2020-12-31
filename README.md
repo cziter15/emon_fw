@@ -17,3 +17,5 @@ Along with hardware-part, I'm working on software - framework for IoT devices li
 <p align="center">
   <img src="docfiles/pcb.jpg">
 </p>
+
+https://hackaday.io/project/175653-iot-for-old-energy-meter
