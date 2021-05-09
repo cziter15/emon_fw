@@ -3,7 +3,7 @@
 #include <ksIotFrameworkLib.h>
 
 #define EMON_SENSOR_PROBES 20
-#define EMON_UP_TRESHOLD 1.1f
+#define EMON_UP_TRESHOLD 1.2f
 #define EMON_DOWN_TRESHOLD 0.9f
 
 #define EMON_TIMER_INTERVAL 50

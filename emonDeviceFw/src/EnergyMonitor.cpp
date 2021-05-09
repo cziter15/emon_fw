@@ -13,9 +13,13 @@ bool EnergyMonitor::init()
 {
 	addComponent<ksf::ksWifiConnector>(EnergyMonitorConfig::emonDeviceName);
 	addComponent<ksf::ksMqttDebugResponder>();
+
 	mqtt_wp = addComponent<ksf::ksMqttConnector>();
 	statusLed_wp = addComponent<ksf::ksLed>(STATUS_LED_PIN);
 	eventLed_wp = addComponent<ksf::ksLed>(EVENT_LED_PIN);
+
+	/* Setup reset button */
+	addComponent<ksf::ksResetButton>(CFG_PUSH_PIN, LOW);
 
 	auto sensor_timer_sp = addComponent<ksf::ksTimer>(EMON_TIMER_INTERVAL, true).lock();
 	auto sec_timer_sp = addComponent<ksf::ksTimer>(EMON_SEC_TIMER, true).lock();
@@ -48,7 +52,7 @@ bool EnergyMonitor::init()
 	if (auto statusLed_sp = statusLed_wp.lock())
 		statusLed_sp->setBlinking(500);
 
-	pinMode(A0, INPUT);
+	pinMode(ANA_PIN, INPUT);
 
 	return true;
 }
@@ -156,7 +160,7 @@ void EnergyMonitor::blackLineDetected()
 void EnergyMonitor::onBlackLineSensorTimer()
 {
 	float lastRecordsAverage = 0;
-	float analog_value = analogRead(A0);
+	float analog_value = analogRead(ANA_PIN);
 
 	buffered_values[++last_val_idx % EMON_SENSOR_PROBES] = (unsigned short)analog_value;
 
