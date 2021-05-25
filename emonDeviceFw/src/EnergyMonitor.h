@@ -2,10 +2,7 @@
 
 #include <ksIotFrameworkLib.h>
 
-#define EMON_SENSOR_PROBES 20
-#define EMON_UP_TRESHOLD 1.2f
-#define EMON_DOWN_TRESHOLD 0.9f
-
+#define EMON_SENSOR_PROBES 400
 #define EMON_TIMER_INTERVAL 50
 #define EMON_SEC_TIMER 1000
 #define EMON_SENSOR_TIMEOUT 600000UL
@@ -24,7 +21,7 @@ namespace debug_mode_type
 		NONE = 0,
 		DEVIATION,
 		RAW_VALUE,
-		AVG_VALUES
+		DOMINANT
 	};
 }
 
@@ -33,8 +30,7 @@ namespace curve_state
 	enum TYPE
 	{
 		WAIT_PREWARM = 0,
-		WAIT_UP,
-		WAIT_FALL,
+		WAIT_UPHILL,
 		WAIT_STABILIZE
 	};
 }
@@ -77,6 +73,8 @@ class EnergyMonitor : public ksf::ksApplication
 		void onAvgCalculationTimer();
 
 		void updateWatts(double currentWatts);
+
+		unsigned short getDominantAsInt(unsigned short* valArr, size_t size, size_t max_val);
 
 	public:
 		bool init() override;

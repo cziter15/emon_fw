@@ -157,19 +157,42 @@ void EnergyMonitor::blackLineDetected()
 		eventLed_sp->setBlinking(75, 6);
 }
 
+unsigned short EnergyMonitor::getDominantAsInt(unsigned short* valArr, size_t size, size_t max_val)
+{
+	unsigned short* valuesTable = new unsigned short[max_val];
+
+	for (unsigned short i = 0; i < max_val; i++)
+	{
+		valuesTable[i] = 0;
+	}
+
+	for (unsigned short i = 0; i < size; i++)
+	{
+		unsigned short cval = (unsigned short)valArr[i];
+		if (cval < max_val) valuesTable[cval]++;
+	}
+
+	unsigned short highestCounter = 0;
+
+	for (unsigned short i = 0; i < max_val; i++)
+	{
+		if (valuesTable[i] > highestCounter)
+		{
+			highestCounter = i;
+		}
+	}
+
+	delete valuesTable;
+	return highestCounter;
+}
+
 void EnergyMonitor::onBlackLineSensorTimer()
 {
-	float lastRecordsAverage = 0;
 	float analog_value = analogRead(ANA_PIN);
+	buffered_values[last_val_idx++ % EMON_SENSOR_PROBES] = (unsigned short)analog_value;
+	unsigned short dominant = getDominantAsInt(buffered_values, EMON_SENSOR_PROBES, 1024);
 
-	buffered_values[++last_val_idx % EMON_SENSOR_PROBES] = (unsigned short)analog_value;
-
-	for (unsigned int idx = 0; idx < EMON_SENSOR_PROBES; ++idx)
-		lastRecordsAverage += buffered_values[(idx + last_val_idx) % EMON_SENSOR_PROBES];
-
-	lastRecordsAverage /= EMON_SENSOR_PROBES;
-
-	float currentDeviation = analog_value / lastRecordsAverage;
+	float currentDeviation = analog_value / dominant;
 
 	if (auto mqtt_sp = mqtt_wp.lock())
 	{
@@ -177,7 +200,7 @@ void EnergyMonitor::onBlackLineSensorTimer()
 		{
 			case debug_mode_type::DEVIATION:	mqtt_sp->publish("watts", String(currentDeviation, 2));		break;
 			case debug_mode_type::RAW_VALUE:	mqtt_sp->publish("watts", String(analog_value, 2));			break;
-			case debug_mode_type::AVG_VALUES:	mqtt_sp->publish("watts", String(lastRecordsAverage, 2));	break;
+			case debug_mode_type::DOMINANT:		mqtt_sp->publish("watts", String(dominant));				break;
 			default: break;
 		}
 	}
@@ -190,23 +213,17 @@ void EnergyMonitor::onBlackLineSensorTimer()
 		break;
 
 		case curve_state::WAIT_STABILIZE:
-			if (fabsf(currentDeviation - 1.0f) <= 0.05f)
-				current_curve_state = curve_state::WAIT_UP;
+			if (fabsf(currentDeviation - 1.0f) <= 0.1f)
+				current_curve_state = curve_state::WAIT_UPHILL;
 		break;
 
-		case curve_state::WAIT_UP:
-			if (currentDeviation > EMON_UP_TRESHOLD)
+		case curve_state::WAIT_UPHILL:
+			if (currentDeviation - 1.0f > 0.2f)
 			{
-				current_curve_state = curve_state::WAIT_FALL;
+				current_curve_state = curve_state::WAIT_STABILIZE;
 				blackLineDetected();
 			}
 		break;
-
-		case curve_state::WAIT_FALL:
-			if (currentDeviation < EMON_DOWN_TRESHOLD)
-				current_curve_state = curve_state::WAIT_STABILIZE;
-		break;
-
 	}
 
 	if (millis() - prevPulseAtMillis > EMON_SENSOR_TIMEOUT)
