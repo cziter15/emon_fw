@@ -63,8 +63,9 @@ class EnergyMonitor : public ksf::ksApplication
 		unsigned short secondsCounter = 0;
 		unsigned short stabilizationCounter = 0;
 
-		unsigned short buffered_values[EMON_SENSOR_PROBES];
-		unsigned short dominant_buffer[MAX_ANA_VALUE];
+		std::vector<unsigned short> buffered_values;
+		std::vector<unsigned short> dominant_buffer;
+
 		unsigned short last_val_idx = 0;
 
 		bool wantUpper = true;
@@ -80,7 +81,7 @@ class EnergyMonitor : public ksf::ksApplication
 
 		void updateWatts(double currentWatts);
 
-		unsigned short getDominantAsInt(unsigned short* valArr, size_t size, size_t max_val);
+		unsigned short getDominantAsInt(std::vector<unsigned short>& valAttr);
 
 	public:
 		bool init() override;

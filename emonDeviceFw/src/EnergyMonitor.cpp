@@ -54,6 +54,9 @@ bool EnergyMonitor::init()
 
 	pinMode(ANA_PIN, INPUT);
 
+	buffered_values.resize(EMON_SENSOR_PROBES);
+	dominant_buffer.resize(MAX_ANA_VALUE);
+
 	return true;
 }
 
@@ -157,19 +160,19 @@ void EnergyMonitor::blackLineDetected()
 		eventLed_sp->setBlinking(75, 6);
 }
 
-unsigned short EnergyMonitor::getDominantAsInt(unsigned short* valArr, size_t size, size_t max_val)
+unsigned short EnergyMonitor::getDominantAsInt(std::vector<unsigned short>& valArr)
 {
-	memset(dominant_buffer, 0, sizeof(dominant_buffer));
+	std::fill(std::begin(dominant_buffer), std::end(dominant_buffer), 0);
 
-	for (unsigned short i = 0; i < size; i++)
+	for (std::size_t i = 0; i < valArr.size(); i++)
 	{
-		unsigned short cval = (unsigned short)valArr[i];
-		if (cval < max_val) dominant_buffer[cval]++;
+		unsigned short cval = valArr[i];
+		if (cval < dominant_buffer.size()) dominant_buffer[cval]++;
 	}
 
 	unsigned short highestCounter = 0;
 
-	for (unsigned short i = 0; i < max_val; i++)
+	for (std::size_t i = 0; i < dominant_buffer.size(); i++)
 	{
 		if (dominant_buffer[i] > highestCounter)
 			highestCounter = i;
@@ -182,7 +185,7 @@ void EnergyMonitor::onBlackLineSensorTimer()
 {
 	float analog_value = analogRead(ANA_PIN);
 	buffered_values[last_val_idx++ % EMON_SENSOR_PROBES] = (unsigned short)analog_value;
-	unsigned short dominant = getDominantAsInt(buffered_values, EMON_SENSOR_PROBES, MAX_ANA_VALUE);
+	unsigned short dominant = getDominantAsInt(buffered_values);
 
 	float currentDeviation = analog_value / dominant;
 
