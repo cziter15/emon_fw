@@ -182,7 +182,7 @@ void EnergyMonitor::onBlackLineSensorTimer()
 {
 	float analog_value = analogRead(ANA_PIN);
 	buffered_values[last_val_idx++ % EMON_SENSOR_PROBES] = (unsigned short)analog_value;
-	unsigned short dominant = getDominantAsInt(buffered_values, EMON_SENSOR_PROBES, 1024);
+	unsigned short dominant = getDominantAsInt(buffered_values, EMON_SENSOR_PROBES, MAX_ANA_VALUE);
 
 	float currentDeviation = analog_value / dominant;
 
