@@ -159,30 +159,22 @@ void EnergyMonitor::blackLineDetected()
 
 unsigned short EnergyMonitor::getDominantAsInt(unsigned short* valArr, size_t size, size_t max_val)
 {
-	unsigned short* valuesTable = new unsigned short[max_val];
-
-	for (unsigned short i = 0; i < max_val; i++)
-	{
-		valuesTable[i] = 0;
-	}
+	memset(dominant_buffer, 0, sizeof(dominant_buffer));
 
 	for (unsigned short i = 0; i < size; i++)
 	{
 		unsigned short cval = (unsigned short)valArr[i];
-		if (cval < max_val) valuesTable[cval]++;
+		if (cval < max_val) dominant_buffer[cval]++;
 	}
 
 	unsigned short highestCounter = 0;
 
 	for (unsigned short i = 0; i < max_val; i++)
 	{
-		if (valuesTable[i] > highestCounter)
-		{
+		if (dominant_buffer[i] > highestCounter)
 			highestCounter = i;
-		}
 	}
 
-	delete valuesTable;
 	return highestCounter;
 }
 
@@ -213,12 +205,18 @@ void EnergyMonitor::onBlackLineSensorTimer()
 		break;
 
 		case curve_state::WAIT_STABILIZE:
-			if (fabsf(currentDeviation - 1.0f) <= 0.1f)
-				current_curve_state = curve_state::WAIT_UPHILL;
+			if (fabsf(currentDeviation - 1.0f) <= EMON_DEVIATION_STABILIZATION)
+			{
+				if (++stabilizationCounter >= EMON_STABILIZATION_PROBE_COUNT)
+				{
+					current_curve_state = curve_state::WAIT_UPHILL;
+					stabilizationCounter = 0;
+				}
+			}
 		break;
 
 		case curve_state::WAIT_UPHILL:
-			if (currentDeviation - 1.0f > 0.2f)
+			if (currentDeviation - 1.0f > EMON_DEVIATION_UPHILL)
 			{
 				current_curve_state = curve_state::WAIT_STABILIZE;
 				blackLineDetected();

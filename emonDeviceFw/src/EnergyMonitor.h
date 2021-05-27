@@ -4,8 +4,12 @@
 
 #define EMON_SENSOR_PROBES 400
 #define EMON_TIMER_INTERVAL 50
+#define MAX_ANA_VALUE 1024
 #define EMON_SEC_TIMER 1000
 #define EMON_SENSOR_TIMEOUT 600000UL
+#define EMON_STABILIZATION_PROBE_COUNT 10
+#define EMON_DEVIATION_UPHILL 0.2f
+#define EMON_DEVIATION_STABILIZATION 0.1f
 
 namespace ksf
 {
@@ -57,8 +61,10 @@ class EnergyMonitor : public ksf::ksApplication
 		unsigned long pulseCount = 0;
 		
 		unsigned short secondsCounter = 0;
-		
+		unsigned short stabilizationCounter = 0;
+
 		unsigned short buffered_values[EMON_SENSOR_PROBES];
+		unsigned short dominant_buffer[MAX_ANA_VALUE];
 		unsigned short last_val_idx = 0;
 
 		bool wantUpper = true;
