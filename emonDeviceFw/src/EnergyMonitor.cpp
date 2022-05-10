@@ -208,7 +208,7 @@ void EnergyMonitor::onBlackLineSensorTimer()
 		break;
 
 		case curve_state::WAIT_STABILIZE:
-			if (fabsf(currentDeviation - 1.0f) <= EMON_DEVIATION_STABILIZATION)
+			if (fabsf(currentDeviation) <= EMON_DEVIATION_STABILIZATION)
 			{
 				if (++stabilizationCounter >= EMON_STABILIZATION_PROBE_COUNT)
 				{
@@ -219,7 +219,7 @@ void EnergyMonitor::onBlackLineSensorTimer()
 		break;
 
 		case curve_state::WAIT_UPHILL:
-			if (currentDeviation - 1.0f > EMON_DEVIATION_UPHILL)
+			if (fabsf(currentDeviation) > EMON_DEVIATION_UPHILL)
 			{
 				current_curve_state = curve_state::WAIT_STABILIZE;
 				blackLineDetected();
