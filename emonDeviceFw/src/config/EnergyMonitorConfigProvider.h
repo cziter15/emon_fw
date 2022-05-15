@@ -3,7 +3,7 @@
 
 class WiFiManager;
 
-class EnergyMonitorConfigProvider : public ksf::ksConfigProvider
+class EnergyMonitorConfigProvider : public ksf::comps::ksConfigProvider
 {
 	protected:
 		static const char emonConfigFile[];

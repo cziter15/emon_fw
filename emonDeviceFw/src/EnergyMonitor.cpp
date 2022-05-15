@@ -11,18 +11,18 @@ using namespace std::placeholders;
 
 bool EnergyMonitor::init()
 {
-	addComponent<ksf::ksWifiConnector>(EnergyMonitorConfig::emonDeviceName);
-	addComponent<ksf::ksMqttDebugResponder>();
+	addComponent<ksf::comps::ksWifiConnector>(EnergyMonitorConfig::emonDeviceName);
+	addComponent<ksf::comps::ksMqttDebugResponder>();
 
-	mqtt_wp = addComponent<ksf::ksMqttConnector>();
-	statusLed_wp = addComponent<ksf::ksLed>(STATUS_LED_PIN);
-	eventLed_wp = addComponent<ksf::ksLed>(EVENT_LED_PIN);
+	mqtt_wp = addComponent<ksf::comps::ksMqttConnector>();
+	statusLed_wp = addComponent<ksf::comps::ksLed>(STATUS_LED_PIN);
+	eventLed_wp = addComponent<ksf::comps::ksLed>(EVENT_LED_PIN);
 
 	/* Setup reset button */
-	addComponent<ksf::ksResetButton>(CFG_PUSH_PIN, LOW);
+	addComponent<ksf::comps::ksResetButton>(CFG_PUSH_PIN, LOW);
 
-	auto sensor_timer_sp = addComponent<ksf::ksTimer>(EMON_TIMER_INTERVAL, true).lock();
-	auto sec_timer_sp = addComponent<ksf::ksTimer>(EMON_SEC_TIMER, true).lock();
+	auto sensor_timer_sp = addComponent<ksf::comps::ksTimer>(EMON_TIMER_INTERVAL, true).lock();
+	auto sec_timer_sp = addComponent<ksf::comps::ksTimer>(EMON_SEC_TIMER, true).lock();
 	
 	if (!ksApplication::init())
 		return false;

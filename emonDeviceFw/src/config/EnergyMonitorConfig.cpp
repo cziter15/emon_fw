@@ -7,11 +7,11 @@ const char EnergyMonitorConfig::emonDeviceName[] = "EnergyMonitor";
 
 bool EnergyMonitorConfig::init()
 {
-	addComponent<ksf::ksLed>(STATUS_LED_PIN);
-	addComponent<ksf::ksLed>(EVENT_LED_PIN);
+	addComponent<ksf::comps::ksLed>(STATUS_LED_PIN);
+	addComponent<ksf::comps::ksLed>(EVENT_LED_PIN);
 
-	addComponent<ksf::ksWiFiConfigurator>(emonDeviceName);
-	addComponent<ksf::ksMqttConfigProvider>();
+	addComponent<ksf::comps::ksWiFiConfigurator>(emonDeviceName);
+	addComponent<ksf::comps::ksMqttConfigProvider>();
 	addComponent<EnergyMonitorConfigProvider>();
 
 	return ksApplication::init();

@@ -46,11 +46,11 @@ class EnergyMonitor : public ksf::ksApplication
 		debug_mode_type::TYPE debug_mode = debug_mode_type::NONE;
 		curve_state::TYPE current_curve_state = curve_state::WAIT_PREWARM;
 
-		std::weak_ptr<ksf::ksMqttConnector> mqtt_wp;
-		std::weak_ptr<ksf::ksLed> statusLed_wp, eventLed_wp;
+		std::weak_ptr<ksf::comps::ksMqttConnector> mqtt_wp;
+		std::weak_ptr<ksf::comps::ksLed> statusLed_wp, eventLed_wp;
 
-		std::shared_ptr<ksf::ksEventHandle> connEventHandle_sp, msgEventHandle_sp, disEventHandle_sp;
-		std::shared_ptr<ksf::ksEventHandle> sensorUpdateEventHandle_sp, secTimerEventHandle_sp;
+		std::shared_ptr<ksf::evt::ksEventHandle> connEventHandle_sp, msgEventHandle_sp, disEventHandle_sp;
+		std::shared_ptr<ksf::evt::ksEventHandle> sensorUpdateEventHandle_sp, secTimerEventHandle_sp;
 
 		double initialKwh = -1;
 		double curWatts = -1.0;
