@@ -1,5 +1,5 @@
-#include "src/EnergyMonitor.h"
-#include "src/config/EnergyMonitorConfig.h"
+#include "EnergyMonitor.h"
+#include "config/EnergyMonitorConfig.h"
 
 // the setup function runs once when you press reset or power the board
 void setup()
