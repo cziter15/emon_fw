@@ -4,12 +4,12 @@
 // the setup function runs once when you press reset or power the board
 void setup()
 {
-	ksf::initKsfFramework();
+	KSF_FRAMEWORK_INIT()
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() 
 {
-	RUN_APP_BLOCKING_LOOPED(EnergyMonitor)
-	RUN_APP_BLOCKING_LOOPED(EnergyMonitorConfig)
+	KSF_RUN_APP_BLOCKING_LOOPED(EnergyMonitor)
+	KSF_RUN_APP_BLOCKING_LOOPED(EnergyMonitorConfig)
 }
