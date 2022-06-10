@@ -26,9 +26,10 @@ bool EnergyMonitor::init()
 	
 	if (!ksApplication::init())
 		return false;
-	
-	ArduinoOTA.begin();
+			
+	ArduinoOTA.setHostname(EnergyMonitorConfig::emonDeviceName);
 	ArduinoOTA.setPassword("ota_ksiotframework");
+	ArduinoOTA.begin();
 
 	EnergyMonitorConfigProvider configProvider;
 	configProvider.init(this);
