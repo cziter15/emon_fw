@@ -1,7 +1,7 @@
 #include "EnergyMonitorConfig.h"
 #include "EnergyMonitorConfigProvider.h"
 
-#include "../board.h"
+#include "board.h"
 
 const char EnergyMonitorConfig::emonDeviceName[] = "EnergyMonitor";
 
