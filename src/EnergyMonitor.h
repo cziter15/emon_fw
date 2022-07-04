@@ -5,7 +5,6 @@
 #define EMON_SENSOR_PROBES 400
 #define EMON_TIMER_INTERVAL 50
 #define MAX_ANA_VALUE 1024
-#define EMON_SEC_TIMER 1000
 #define EMON_SENSOR_TIMEOUT 600000UL
 #define EMON_STABILIZATION_PROBE_COUNT 10
 #define EMON_DEVIATION_UPHILL 1.75f
@@ -52,7 +51,7 @@ class EnergyMonitor : public ksf::ksApplication
 		std::shared_ptr<ksf::evt::ksEventHandle> connEventHandle_sp, msgEventHandle_sp, disEventHandle_sp;
 		std::shared_ptr<ksf::evt::ksEventHandle> sensorUpdateEventHandle_sp, secTimerEventHandle_sp;
 
-		ksf::ksSimpleTimer secTimer{EMON_TIMER_INTERVAL};
+		ksf::ksSimpleTimer secTimer{KSF_ONE_SECOND_MS};
 		ksf::ksSimpleTimer sensorTimer{EMON_TIMER_INTERVAL};
 			
 		double initialKwh = -1;
