@@ -21,9 +21,6 @@ bool EnergyMonitor::init()
 	/* Setup reset button */
 	addComponent<ksf::comps::ksResetButton>(CFG_PUSH_PIN, LOW);
 
-	auto sensor_timer_sp = addComponent<ksf::comps::ksTimer>(EMON_TIMER_INTERVAL, true).lock();
-	auto sec_timer_sp = addComponent<ksf::comps::ksTimer>(EMON_SEC_TIMER, true).lock();
-	
 	if (!ksApplication::init())
 		return false;
 			
@@ -43,12 +40,6 @@ bool EnergyMonitor::init()
 		mqtt_sp->onConnected->registerEvent(connEventHandle_sp, std::bind(&EnergyMonitor::onMqttConnected, this));
 		mqtt_sp->onDisconnected->registerEvent(disEventHandle_sp, std::bind(&EnergyMonitor::onMqttDisconnected, this));
 	}
-
-	if (sensor_timer_sp)
-		sensor_timer_sp->onTimerExpired->registerEvent(sensorUpdateEventHandle_sp, std::bind(&EnergyMonitor::onBlackLineSensorTimer, this));
-	
-	if (sec_timer_sp)
-		sec_timer_sp->onTimerExpired->registerEvent(secTimerEventHandle_sp, std::bind(&EnergyMonitor::onAvgCalculationTimer, this));
 
 	if (auto statusLed_sp = statusLed_wp.lock())
 		statusLed_sp->setBlinking(500);
@@ -234,6 +225,12 @@ void EnergyMonitor::onBlackLineSensorTimer()
 
 bool EnergyMonitor::loop()
 {
+	if (sensorTimer.triggered())
+		onBlackLineSensorTimer();
+
+	if (secTimer.triggered())
+		onAvgCalculationTimer();
+
 	ArduinoOTA.handle();
 	return ksApplication::loop();
 }

@@ -52,6 +52,9 @@ class EnergyMonitor : public ksf::ksApplication
 		std::shared_ptr<ksf::evt::ksEventHandle> connEventHandle_sp, msgEventHandle_sp, disEventHandle_sp;
 		std::shared_ptr<ksf::evt::ksEventHandle> sensorUpdateEventHandle_sp, secTimerEventHandle_sp;
 
+		ksf::ksSimpleTimer secTimer{EMON_TIMER_INTERVAL};
+		ksf::ksSimpleTimer sensorTimer{EMON_TIMER_INTERVAL};
+			
 		double initialKwh = -1;
 		double curWatts = -1.0;
 		double accumulativeWatts = 0.0;
