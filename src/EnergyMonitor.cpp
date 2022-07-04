@@ -149,7 +149,7 @@ void EnergyMonitor::blackLineDetected()
 	prevPulseAtMillis = millis();
 
 	if (auto eventLed_sp = eventLed_wp.lock())
-		eventLed_sp->setBlinking(75, 6);
+		eventLed_sp->setBlinking(75, 4);
 }
 
 unsigned short EnergyMonitor::getDominantAsInt(std::vector<unsigned short>& valArr)
