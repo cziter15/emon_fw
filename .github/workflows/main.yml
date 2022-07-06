@@ -29,7 +29,6 @@ jobs:
         pip install --upgrade platformio
     - name: Run PlatformIO
       run: |
-        cd firmware
         pio upgrade --dev
         pio run
     - name: Upload firmware artifact
