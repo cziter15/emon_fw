@@ -35,4 +35,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: EmonFirmware
-        path: firmware/.pio/build/esp8266dev/firmware.bin
+        path: .pio/build/esp8266dev/firmware.bin
