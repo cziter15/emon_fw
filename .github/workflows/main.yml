@@ -31,7 +31,7 @@ jobs:
         pip install --upgrade platformio
     - name: Run PlatformIO
       run: |
-        pio upgrade --dev
+        pio upgrade
         pio run
     - name: Upload firmware artifact
       uses: actions/upload-artifact@v3
