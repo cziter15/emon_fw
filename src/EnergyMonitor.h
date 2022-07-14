@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ksIotFrameworkLib.h>
+#include "ArduinoOTA.h"
 
 #define EMON_SENSOR_PROBES 400
 #define EMON_TIMER_INTERVAL 50
@@ -53,6 +54,8 @@ class EnergyMonitor : public ksf::ksApplication
 
 		ksf::ksSimpleTimer secTimer{KSF_ONE_SECOND_MS};
 		ksf::ksSimpleTimer sensorTimer{EMON_TIMER_INTERVAL};
+
+		ArduinoOTAClass ArduinoOTA;
 			
 		double initialKwh = -1;
 		double curWatts = -1.0;

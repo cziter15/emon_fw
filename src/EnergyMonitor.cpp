@@ -5,8 +5,6 @@
 
 #include <ksIotFrameworkLib.h>
 
-#include "ArduinoOTA.h"
-
 using namespace std::placeholders;
 
 bool EnergyMonitor::init()
