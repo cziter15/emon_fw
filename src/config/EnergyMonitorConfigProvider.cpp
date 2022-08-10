@@ -17,8 +17,7 @@ void EnergyMonitorConfigProvider::injectManagerParameters(WiFiManager& manager)
 {
 	USING_CONFIG_FILE(emonConfigFile)
 	{
-		params.push_back(new WiFiManagerParameter(rotationsParamName, rotationsParamName, config_file.getParam(rotationsParamName, "").c_str(), 5));
-		manager.addParameter(params.back());
+		addNewParam(manager, rotationsParamName, config_file.getParam(rotationsParamName).c_str(), 5);
 	}
 }
 
@@ -28,9 +27,6 @@ void EnergyMonitorConfigProvider::captureManagerParameters(WiFiManager& manager)
 	{
 		for (auto& param : params)
 			config_file.setParam(param->getID(), param->getValue());
-
-		for (auto& param : params)
-			delete param;
 
 		params.clear();
 	}

@@ -9,8 +9,6 @@ class EnergyMonitorConfigProvider : public ksf::comps::ksConfigProvider
 		static const char emonConfigFile[];
 		static const char rotationsParamName[];
 
-		std::vector<class WiFiManagerParameter*> params;
-
 	public:
 		void injectManagerParameters(WiFiManager& manager) override;
 		void captureManagerParameters(WiFiManager& manager) override;
