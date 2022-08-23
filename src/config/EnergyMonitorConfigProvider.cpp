@@ -7,7 +7,7 @@ bool EnergyMonitorConfigProvider::setupRotations(unsigned short& outRotationsPer
 {
 	USING_CONFIG_FILE(emonConfigFile)
 	{
-		outRotationsPerKwh = (unsigned short)(config_file.getParam(rotationsParamName).toInt());
+		outRotationsPerKwh = (unsigned short)std::stol(config_file.getParam(rotationsParamName));
 	}
 
 	return outRotationsPerKwh > 0;

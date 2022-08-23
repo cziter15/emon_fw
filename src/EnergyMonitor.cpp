@@ -69,35 +69,35 @@ void EnergyMonitor::onMqttConnected()
 	}
 }
 
-void EnergyMonitor::onMqttMessage(const String& topic, const String& payload)
+void EnergyMonitor::onMqttMessage(const std::string_view& topic, const std::string_view& payload)
 {
 	if (auto mqtt_sp = mqtt_wp.lock())
 	{
-		if (topic.equals("totalkWh") && initialKwh < 0)
+		if (topic.compare("totalkWh") == 0 && initialKwh < 0)
 		{
-			initialKwh = payload.toDouble();
+			initialKwh = std::stof(std::string(payload));
 			mqtt_sp->unsubscribe("totalkWh");
 		}
-		else if (topic.equals("clearkwh"))
+		else if (topic.compare("clearkwh") == 0)
 		{
 			pulseCount = 0;
 			initialKwh = 0;
 
-			mqtt_sp->publish("totalkWh", String('0'), true);
+			mqtt_sp->publish("totalkWh", "0", true);
 
 			time_t rawtime; time(&rawtime);
 			if (struct tm* timeinfo = localtime(&rawtime))
 			{
-				String date =
-					String(timeinfo->tm_mday) + "." + String(timeinfo->tm_mon + 1) + "." + String(timeinfo->tm_year + 1900) + " " +
-					String(timeinfo->tm_hour) + ":" + String(timeinfo->tm_min) + ":" + String(timeinfo->tm_sec) + " UTC";
+				std::string date =
+					std::to_string(timeinfo->tm_mday) + "." + std::to_string(timeinfo->tm_mon + 1) + "." + std::to_string(timeinfo->tm_year + 1900) + " " +
+					std::to_string(timeinfo->tm_hour) + ":" + std::to_string(timeinfo->tm_min) + ":" + std::to_string(timeinfo->tm_sec) + " UTC";
 
 				mqtt_sp->publish("kWhResetTime", date);
 			}
 		}
-		else if (topic.equals("dbg"))
+		else if (topic.compare("dbg") == 0)
 		{
-			debug_mode = (debug_mode_type::TYPE)payload.toInt();
+			debug_mode = (debug_mode_type::TYPE)std::atoi(std::string(payload).c_str());
 		}
 	}
 }
@@ -114,10 +114,10 @@ void EnergyMonitor::onAvgCalculationTimer()
 			if (auto mqtt_sp = mqtt_wp.lock())
 			{
 				double avg5minWatts = accumulativeWatts / secondsCounter;
-				mqtt_sp->publish("5minAvgWatts", String(avg5minWatts, 0));
+				mqtt_sp->publish("5minAvgWatts", ksf::to_string(avg5minWatts, 0));
 
 				double totalkWh = (double)pulseCount / (double)rotationsPerKwh + initialKwh;
-				mqtt_sp->publish("totalkWh", String(totalkWh), true);
+				mqtt_sp->publish("totalkWh", std::to_string(totalkWh), true);
 			}
 
 			secondsCounter = 0;
@@ -133,7 +133,7 @@ void EnergyMonitor::updateWatts(double currentWatts)
 	/* If no debug, send calculated watts */
 	if (debug_mode == debug_mode_type::NONE)
 		if (auto mqtt_sp = mqtt_wp.lock())
-			mqtt_sp->publish("watts", String(curWatts, 0));
+			mqtt_sp->publish("watts", ksf::to_string(curWatts, 0));
 
 	prevPulseAtMillis = millis();
 }
@@ -183,9 +183,9 @@ void EnergyMonitor::onBlackLineSensorTimer()
 	{
 		switch (debug_mode)
 		{
-			case debug_mode_type::DEVIATION:	mqtt_sp->publish("watts", String(currentDeviation, 2));		break;
-			case debug_mode_type::RAW_VALUE:	mqtt_sp->publish("watts", String(analog_value, 2));			break;
-			case debug_mode_type::DOMINANT:		mqtt_sp->publish("watts", String(dominant));				break;
+			case debug_mode_type::DEVIATION:	mqtt_sp->publish("watts", ksf::to_string(currentDeviation, 2));		break;
+			case debug_mode_type::RAW_VALUE:	mqtt_sp->publish("watts", ksf::to_string(analog_value, 2));			break;
+			case debug_mode_type::DOMINANT:		mqtt_sp->publish("watts", std::to_string(dominant));				break;
 			default: break;
 		}
 	}

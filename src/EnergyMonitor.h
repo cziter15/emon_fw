@@ -75,7 +75,7 @@ class EnergyMonitor : public ksf::ksApplication
 
 		bool wantUpper = true;
 
-		void onMqttMessage(const String& topic, const String& payload);
+		void onMqttMessage(const std::string_view& topic, const std::string_view& payload);
 		void onMqttConnected();
 		void onMqttDisconnected();
 
