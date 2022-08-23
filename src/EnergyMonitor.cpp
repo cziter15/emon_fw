@@ -116,8 +116,8 @@ void EnergyMonitor::onAvgCalculationTimer()
 				double avg5minWatts = accumulativeWatts / secondsCounter;
 				mqtt_sp->publish("5minAvgWatts", ksf::to_string(avg5minWatts, 0));
 
-				double totalkWh = (double)pulseCount / (double)rotationsPerKwh + initialKwh;
-				mqtt_sp->publish("totalkWh", std::to_string(totalkWh), true);
+				double totalkWh = static_cast<double>(pulseCount) / static_cast<double>(rotationsPerKwh) + initialKwh;
+				mqtt_sp->publish("totalkWh", std::to_string(static_cast<int>(totalkWh)), true);
 			}
 
 			secondsCounter = 0;
@@ -142,7 +142,7 @@ void EnergyMonitor::blackLineDetected()
 {
 	++pulseCount;
 	double pulseTime = millis() - prevPulseAtMillis;
-	updateWatts((unsigned long)(3600000.0 / ((double)rotationsPerKwh * pulseTime) * 1000.0));
+	updateWatts(static_cast<unsigned long>(3600000.0 / (static_cast<double>(rotationsPerKwh) * pulseTime) * 1000.0));
 
 	prevPulseAtMillis = millis();
 
@@ -174,7 +174,7 @@ unsigned short EnergyMonitor::getDominantAsInt(std::vector<unsigned short>& valA
 void EnergyMonitor::onBlackLineSensorTimer()
 {
 	float analog_value = analogRead(ANA_PIN);
-	buffered_values[last_val_idx++ % EMON_SENSOR_PROBES] = (unsigned short)analog_value;
+	buffered_values[last_val_idx++ % EMON_SENSOR_PROBES] = static_cast<unsigned short>(analog_value);
 	unsigned short dominant = getDominantAsInt(buffered_values);
 
 	float currentDeviation = analog_value / dominant;
