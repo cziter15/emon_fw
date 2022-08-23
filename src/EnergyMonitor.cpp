@@ -117,7 +117,7 @@ void EnergyMonitor::onAvgCalculationTimer()
 				mqtt_sp->publish("5minAvgWatts", ksf::to_string(avg5minWatts, 0));
 
 				double totalkWh = static_cast<double>(pulseCount) / static_cast<double>(rotationsPerKwh) + initialKwh;
-				mqtt_sp->publish("totalkWh", std::to_string(static_cast<int>(totalkWh)), true);
+				mqtt_sp->publish("totalkWh", ksf::to_string(totalkWh, 2), true);
 			}
 
 			secondsCounter = 0;
