@@ -5,6 +5,8 @@ class WiFiManager;
 
 class EnergyMonitorConfigProvider : public ksf::comps::ksConfigProvider
 {
+	KSF_RTTI_DECLARATIONS(EnergyMonitorConfigProvider, ksf::comps::ksConfigProvider)
+
 	protected:
 		static const char emonConfigFile[];
 		static const char rotationsParamName[];
