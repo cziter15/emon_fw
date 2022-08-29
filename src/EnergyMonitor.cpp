@@ -2,7 +2,7 @@
 #include "config/EnergyMonitorConfig.h"
 #include "config/EnergyMonitorConfigProvider.h"
 #include "board.h"
-
+#include <charconv>
 #include <ksIotFrameworkLib.h>
 
 using namespace std::placeholders;
@@ -75,7 +75,7 @@ void EnergyMonitor::onMqttMessage(const std::string_view& topic, const std::stri
 	{
 		if (topic.compare("totalkWh") == 0 && initialKwh < 0)
 		{
-			initialKwh = std::stof(std::string(payload));
+			initialKwh = std::atof(std::string(payload).c_str());
 			mqtt_sp->unsubscribe("totalkWh");
 		}
 		else if (topic.compare("clearkwh") == 0)
@@ -97,7 +97,9 @@ void EnergyMonitor::onMqttMessage(const std::string_view& topic, const std::stri
 		}
 		else if (topic.compare("dbg") == 0)
 		{
-			debug_mode = (debug_mode_type::TYPE)std::atoi(std::string(payload).c_str());
+			int mode{0};
+			std::from_chars(payload.data(), payload.data() + payload.size(), mode);
+			debug_mode = (debug_mode_type::TYPE)mode;
 		}
 	}
 }
