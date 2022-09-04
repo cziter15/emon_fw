@@ -3,7 +3,6 @@
 [![Based on ksIotFrameworkLib](https://img.shields.io/badge/based%20on-ksIotFrameworkLib-blueviolet)](https://github.com/cziter15/ksIotFrameworkLib)
 [![Hits-of-Code](https://hitsofcode.com/github/cziter15/emon_fw)](https://hitsofcode.com/github/cziter15/emon_fw/view)
 [![Device Firmware](https://github.com/cziter15/emon_fw/actions/workflows/main.yml/badge.svg)](https://github.com/cziter15/emon_fw/actions/workflows/main.yml)
-[![Uptime](https://img.shields.io/uptimerobot/ratio/7/m792213806-efb6867562a4c31babc7567b)](https://stats.uptimerobot.com/M2OGni2JND)
 
 ## Description
 
