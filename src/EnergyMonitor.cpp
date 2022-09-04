@@ -2,7 +2,6 @@
 #include "config/EnergyMonitorConfig.h"
 #include "config/EnergyMonitorConfigProvider.h"
 #include "board.h"
-#include <charconv>
 #include <ksIotFrameworkLib.h>
 
 using namespace std::placeholders;
@@ -89,8 +88,8 @@ void EnergyMonitor::onMqttMessage(const std::string_view& topic, const std::stri
 			if (struct tm* timeinfo = localtime(&rawtime))
 			{
 				std::string date =
-					std::to_string(timeinfo->tm_mday) + "." + std::to_string(timeinfo->tm_mon + 1) + "." + std::to_string(timeinfo->tm_year + 1900) + " " +
-					std::to_string(timeinfo->tm_hour) + ":" + std::to_string(timeinfo->tm_min) + ":" + std::to_string(timeinfo->tm_sec) + " UTC";
+					ksf::to_string(timeinfo->tm_mday) + "." + ksf::to_string(timeinfo->tm_mon + 1) + "." + ksf::to_string(timeinfo->tm_year + 1900) + " " +
+					ksf::to_string(timeinfo->tm_hour) + ":" + ksf::to_string(timeinfo->tm_min) + ":" + ksf::to_string(timeinfo->tm_sec) + " UTC";
 
 				mqtt_sp->publish("kWhResetTime", date);
 			}
@@ -98,7 +97,7 @@ void EnergyMonitor::onMqttMessage(const std::string_view& topic, const std::stri
 		else if (topic.compare("dbg") == 0)
 		{
 			int mode{0};
-			std::from_chars(payload.data(), payload.data() + payload.size(), mode);
+			ksf::from_chars(payload, mode);
 			debug_mode = (debug_mode_type::TYPE)mode;
 		}
 	}
@@ -187,7 +186,7 @@ void EnergyMonitor::onBlackLineSensorTimer()
 		{
 			case debug_mode_type::DEVIATION:	mqtt_sp->publish("watts", ksf::to_string(currentDeviation, 2));		break;
 			case debug_mode_type::RAW_VALUE:	mqtt_sp->publish("watts", ksf::to_string(analog_value, 2));			break;
-			case debug_mode_type::DOMINANT:		mqtt_sp->publish("watts", std::to_string(dominant));				break;
+			case debug_mode_type::DOMINANT:		mqtt_sp->publish("watts", ksf::to_string(dominant));				break;
 			default: break;
 		}
 	}
