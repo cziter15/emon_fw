@@ -31,14 +31,14 @@ bool EnergyMonitor::init()
 	if (!configProvider.setupRotations(rotationsPerKwh))
 		return false;
 	
-	if (auto mqtt_sp = mqtt_wp.lock())
+	if (auto mqtt_sp{mqtt_wp.lock()})
 	{
 		mqtt_sp->onMesssage->registerEvent(msgEventHandle_sp, std::bind(&EnergyMonitor::onMqttMessage, this, _1, _2));
 		mqtt_sp->onConnected->registerEvent(connEventHandle_sp, std::bind(&EnergyMonitor::onMqttConnected, this));
 		mqtt_sp->onDisconnected->registerEvent(disEventHandle_sp, std::bind(&EnergyMonitor::onMqttDisconnected, this));
 	}
 
-	if (auto statusLed_sp = statusLed_wp.lock())
+	if (auto statusLed_sp{statusLed_wp.lock()})
 		statusLed_sp->setBlinking(500);
 
 	pinMode(ANA_PIN, INPUT);
@@ -51,16 +51,16 @@ bool EnergyMonitor::init()
 
 void EnergyMonitor::onMqttDisconnected()
 {
-	if (auto statusLed_sp = statusLed_wp.lock())
+	if (auto statusLed_sp{statusLed_wp.lock()})
 		statusLed_sp->setBlinking(500);
 }
 
 void EnergyMonitor::onMqttConnected()
 {
-	if (auto statusLed_sp = statusLed_wp.lock())
+	if (auto statusLed_sp{statusLed_wp.lock()})
 		statusLed_sp->setBlinking(0);
 
-	if (auto mqtt_sp = mqtt_wp.lock())
+	if (auto mqtt_sp{mqtt_wp.lock()})
 	{
 		mqtt_sp->subscribe("totalkWh");
 		mqtt_sp->subscribe("clearkwh");
@@ -70,7 +70,7 @@ void EnergyMonitor::onMqttConnected()
 
 void EnergyMonitor::onMqttMessage(const std::string_view& topic, const std::string_view& payload)
 {
-	if (auto mqtt_sp = mqtt_wp.lock())
+	if (auto mqtt_sp{mqtt_wp.lock()})
 	{
 		if (topic.compare("totalkWh") == 0 && initialKwh < 0)
 		{
@@ -87,9 +87,10 @@ void EnergyMonitor::onMqttMessage(const std::string_view& topic, const std::stri
 			time_t rawtime; time(&rawtime);
 			if (struct tm* timeinfo = localtime(&rawtime))
 			{
-				std::string date =
+				std::string date{
 					ksf::to_string(timeinfo->tm_mday) + "." + ksf::to_string(timeinfo->tm_mon + 1) + "." + ksf::to_string(timeinfo->tm_year + 1900) + " " +
-					ksf::to_string(timeinfo->tm_hour) + ":" + ksf::to_string(timeinfo->tm_min) + ":" + ksf::to_string(timeinfo->tm_sec) + " UTC";
+					ksf::to_string(timeinfo->tm_hour) + ":" + ksf::to_string(timeinfo->tm_min) + ":" + ksf::to_string(timeinfo->tm_sec) + " UTC"
+				};
 
 				mqtt_sp->publish("kWhResetTime", date);
 			}
@@ -112,12 +113,12 @@ void EnergyMonitor::onAvgCalculationTimer()
 
 		if (secondsCounter >= 300)
 		{
-			if (auto mqtt_sp = mqtt_wp.lock())
+			if (auto mqtt_sp{mqtt_wp.lock()})
 			{
-				double avg5minWatts = accumulativeWatts / secondsCounter;
+				double avg5minWatts{accumulativeWatts / secondsCounter};
 				mqtt_sp->publish("5minAvgWatts", ksf::to_string(avg5minWatts, 0));
 
-				double totalkWh = static_cast<double>(pulseCount) / static_cast<double>(rotationsPerKwh) + initialKwh;
+				double totalkWh{static_cast<double>(pulseCount) / static_cast<double>(rotationsPerKwh) + initialKwh};
 				mqtt_sp->publish("totalkWh", ksf::to_string(totalkWh, 2), true);
 			}
 
@@ -133,7 +134,7 @@ void EnergyMonitor::updateWatts(double currentWatts)
 
 	/* If no debug, send calculated watts */
 	if (debug_mode == debug_mode_type::NONE)
-		if (auto mqtt_sp = mqtt_wp.lock())
+		if (auto mqtt_sp{mqtt_wp.lock()})
 			mqtt_sp->publish("watts", ksf::to_string(curWatts, 0));
 
 	prevPulseAtMillis = millis();
@@ -142,26 +143,26 @@ void EnergyMonitor::updateWatts(double currentWatts)
 void EnergyMonitor::blackLineDetected()
 {
 	++pulseCount;
-	double pulseTime = millis() - prevPulseAtMillis;
+	unsigned long pulseTime{millis() - prevPulseAtMillis};
 	updateWatts(static_cast<unsigned long>(3600000.0 / (static_cast<double>(rotationsPerKwh) * pulseTime) * 1000.0));
 
 	prevPulseAtMillis = millis();
 
-	if (auto eventLed_sp = eventLed_wp.lock())
+	if (auto eventLed_sp{eventLed_wp.lock()})
 		eventLed_sp->setBlinking(75, 4);
 }
 
-unsigned short EnergyMonitor::getDominantAsInt(std::vector<unsigned short>& valArr)
+unsigned short EnergyMonitor::getDominantAsUShort(std::vector<unsigned short>& valArr)
 {
 	std::fill(std::begin(dominant_buffer), std::end(dominant_buffer), 0);
 
-	for (std::size_t i = 0; i < valArr.size(); i++)
+	for (std::size_t i{0}; i < valArr.size(); i++)
 	{
-		unsigned short cval = valArr[i];
+		unsigned short cval{valArr[i]};
 		if (cval < dominant_buffer.size()) dominant_buffer[cval]++;
 	}
 
-	unsigned short highestCounter = 0;
+	unsigned short highestCounter{0};
 
 	for (std::size_t i = 0; i < dominant_buffer.size(); i++)
 	{
@@ -174,13 +175,13 @@ unsigned short EnergyMonitor::getDominantAsInt(std::vector<unsigned short>& valA
 
 void EnergyMonitor::onBlackLineSensorTimer()
 {
-	float analog_value = analogRead(ANA_PIN);
+	float analog_value{static_cast<float>(analogRead(ANA_PIN))};
 	buffered_values[last_val_idx++ % EMON_SENSOR_PROBES] = static_cast<unsigned short>(analog_value);
-	unsigned short dominant = getDominantAsInt(buffered_values);
+	unsigned short dominant{getDominantAsUShort(buffered_values)};
 
-	float currentDeviation = analog_value / dominant;
+	float currentDeviation{analog_value / dominant};
 
-	if (auto mqtt_sp = mqtt_wp.lock())
+	if (auto mqtt_sp{mqtt_wp.lock()})
 	{
 		switch (debug_mode)
 		{

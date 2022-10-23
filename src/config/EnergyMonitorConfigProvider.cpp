@@ -7,7 +7,7 @@ bool EnergyMonitorConfigProvider::setupRotations(unsigned short& outRotationsPer
 {
 	USING_CONFIG_FILE(emonConfigFile)
 	{
-		auto& rotationsParamContent = config_file.getParam(rotationsParamName);
+		auto& rotationsParamContent{config_file.getParam(rotationsParamName)};
 		ksf::from_chars(rotationsParamContent, outRotationsPerKwh);
 	}
 

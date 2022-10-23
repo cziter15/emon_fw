@@ -43,8 +43,8 @@ namespace curve_state
 class EnergyMonitor : public ksf::ksApplication
 {
 	protected:
-		debug_mode_type::TYPE debug_mode = debug_mode_type::NONE;
-		curve_state::TYPE current_curve_state = curve_state::WAIT_PREWARM;
+		debug_mode_type::TYPE debug_mode{debug_mode_type::NONE};
+		curve_state::TYPE current_curve_state{curve_state::WAIT_PREWARM};
 
 		std::weak_ptr<ksf::comps::ksMqttConnector> mqtt_wp;
 		std::weak_ptr<ksf::comps::ksLed> statusLed_wp, eventLed_wp;
@@ -57,23 +57,23 @@ class EnergyMonitor : public ksf::ksApplication
 
 		ArduinoOTAClass ArduinoOTA;
 			
-		double initialKwh = -1;
-		double curWatts = -1.0;
-		double accumulativeWatts = 0.0;
+		double initialKwh{-1.0};
+		double curWatts{-1.0};
+		double accumulativeWatts{0.0};
 
-		unsigned short rotationsPerKwh = 0;
-		unsigned long prevPulseAtMillis = 0;
-		unsigned long pulseCount = 0;
+		unsigned short rotationsPerKwh{0};
+		unsigned long prevPulseAtMillis{0};
+		unsigned long pulseCount{0};
 		
-		unsigned short secondsCounter = 0;
-		unsigned short stabilizationCounter = 0;
+		unsigned short secondsCounter{0};
+		unsigned short stabilizationCounter{0};
 
 		std::vector<unsigned short> buffered_values;
 		std::vector<unsigned short> dominant_buffer;
 
-		unsigned short last_val_idx = 0;
+		unsigned short last_val_idx{0};
 
-		bool wantUpper = true;
+		bool wantUpper{true};
 
 		void onMqttMessage(const std::string_view& topic, const std::string_view& payload);
 		void onMqttConnected();
@@ -86,7 +86,7 @@ class EnergyMonitor : public ksf::ksApplication
 
 		void updateWatts(double currentWatts);
 
-		unsigned short getDominantAsInt(std::vector<unsigned short>& valAttr);
+		unsigned short getDominantAsUShort(std::vector<unsigned short>& valAttr);
 
 	public:
 		bool init() override;
