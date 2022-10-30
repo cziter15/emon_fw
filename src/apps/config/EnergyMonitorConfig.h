@@ -9,10 +9,16 @@
 
 #pragma once
 
-/* Input pins */
-#define CFG_PUSH_PIN 0
-#define ANA_PIN A0
+#include <ksIotFrameworkLib.h>
 
-/* Output pins */
-#define STATUS_LED_PIN 4
-#define EVENT_LED_PIN 5
+namespace apps::config
+{
+	class EnergyMonitorConfig : public ksf::ksApplication
+	{
+		public:
+			static const char emonDeviceName[];
+
+			bool init() override;
+			bool loop() override;
+	};
+}
