@@ -101,7 +101,7 @@ namespace apps::emon::components
 
 	bool EnergySensor::loop()
 	{
-		if (lineSensor.triggered())
+		if (sensorTimer.triggered() && lineSensor.triggered())
 			onBlackLineDetected();
 
 		if (totalUpdateTimer.triggered())
