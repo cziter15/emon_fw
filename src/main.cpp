@@ -7,7 +7,7 @@
  *	https://github.com/cziter15/emon_fw/blob/master/LICENSE
  */
 
-#include "apps/emon/EnergyMonitor.h"
+#include "apps/emon/EnergyMonitorApp.h"
 #include "apps/config/EnergyMonitorConfig.h"
 
 using namespace apps;
@@ -21,6 +21,6 @@ void setup()
 // the loop function runs over and over again until power down or reset
 void loop() 
 {
-	KSF_RUN_APP_BLOCKING_LOOPED(emon::EnergyMonitor)
+	KSF_RUN_APP_BLOCKING_LOOPED(emon::EnergyMonitorApp)
 	KSF_RUN_APP_BLOCKING_LOOPED(config::EnergyMonitorConfig)
 }
