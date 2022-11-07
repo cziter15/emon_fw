@@ -25,17 +25,35 @@ namespace apps::emon
 	class EnergyMonitorApp : public ksf::ksApplication
 	{
 		protected:
-			std::weak_ptr<ksf::comps::ksLed> statusLedWp, eventLedWp;
-			std::weak_ptr<ksf::comps::ksMqttConnector> mqttWp;
+			std::weak_ptr<ksf::comps::ksLed> statusLedWp, eventLedWp;							// Weak pointer to LEDs.
 
-			std::shared_ptr<ksf::evt::ksEventHandle> connEventHandleSp, disEventHandleSp;
+			std::weak_ptr<ksf::comps::ksMqttConnector> mqttWp;									// Weak pointer to MQTT component.
+			std::shared_ptr<ksf::evt::ksEventHandle> connEventHandleSp, disEventHandleSp;		// Event handlers for connect/disconnect.
 
-			ArduinoOTAClass ArduinoOTA;
+			ArduinoOTAClass ArduinoOTA;															// OTA object.
 
+			/*
+				Called on MQTT connection established.
+			*/
 			void onMqttConnected();
+
+			/*
+				Called on MQTT connection lost.
+			*/
 			void onMqttDisconnected();
 		public:
+			/*
+				Initializes EnergyMonitorApp.
+
+				@return True on success, false on fail.
+			*/
 			bool init() override;
+
+			/*
+				Main application loop.
+
+				@return True on success, false on fail.
+			*/
 			bool loop() override;
 	};
 }

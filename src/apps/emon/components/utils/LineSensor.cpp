@@ -23,11 +23,15 @@ namespace apps::emon::components::utils
 		bufferedValues.resize(probeCount);
 		dominantBuffer.resize(maxValue);
 		
-		pinMode(pin, INPUT);
+		if (pin != std::numeric_limits<uint8_t>::max())
+			pinMode(pin, INPUT);
 	}
 
 	bool LineSensor::triggered()
 	{
+		if (pin == std::numeric_limits<uint8_t>::max())
+			return false;
+
 		uint16_t dominant{0};
 		auto anaValue{static_cast<uint16_t>(analogRead(pin))};
 
@@ -37,7 +41,9 @@ namespace apps::emon::components::utils
 		for (std::size_t i{0}; i < bufferedValues.size(); i++)
 		{
 			uint16_t currentValue{bufferedValues[i]};
-			if (currentValue < dominantBuffer.size()) dominantBuffer[currentValue]++;
+
+			if (currentValue < dominantBuffer.size()) 
+				dominantBuffer[currentValue]++;
 		}
 
 		for (std::size_t i{0}; i < dominantBuffer.size(); i++)
@@ -48,30 +54,36 @@ namespace apps::emon::components::utils
 
 		float currentDeviation{static_cast<float>(anaValue) / static_cast<float>(dominant)};
 
-		switch (currentMeasurementStage)
+		switch (currentStage)
 		{
 			case LSMeasurementStage::WAIT_PREWARM:
+			{
 				if (lastValueIndex > bufferedValues.size())
-					currentMeasurementStage = LSMeasurementStage::WAIT_STABILIZE;
+					currentStage = LSMeasurementStage::WAIT_STABILIZE;
+			}
 			break;
 
 			case LSMeasurementStage::WAIT_STABILIZE:
+			{
 				if (fabsf(currentDeviation) <= EMON_DEVIATION_STABILIZATION)
 				{
 					if (++stabilizationCounter >= EMON_STABILIZATION_PROBE_COUNT)
 					{
-						currentMeasurementStage = LSMeasurementStage::WAIT_UPHILL;
+						currentStage = LSMeasurementStage::WAIT_UPHILL;
 						stabilizationCounter = 0;
 					}
 				}
+			}
 			break;
 
 			case LSMeasurementStage::WAIT_UPHILL:
+			{
 				if (fabsf(currentDeviation) > EMON_DEVIATION_UPHILL)
 				{
-					currentMeasurementStage = LSMeasurementStage::WAIT_STABILIZE;
+					currentStage = LSMeasurementStage::WAIT_STABILIZE;
 					return true;
 				}
+			}
 			break;
 		}
 

@@ -20,13 +20,18 @@ namespace apps::emon
 {
 	bool EnergyMonitorApp::init()
 	{
+		/* Add WiFi connector component. */
 		addComponent<ksf::comps::ksWifiConnector>(EnergyMonitorConfig::emonDeviceName);
-		addComponent<ksf::comps::ksMqttDebugResponder>();
 
+		/* Add MQTT components. */
+		addComponent<ksf::comps::ksMqttDebugResponder>();
 		mqttWp = addComponent<ksf::comps::ksMqttConnector>();
+
+		/* Add LED indicator components. */
 		statusLedWp = addComponent<ksf::comps::ksLed>(STATUS_LED_PIN);
 		eventLedWp = addComponent<ksf::comps::ksLed>(EVENT_LED_PIN);
 
+		/* Add sensor component. */
 		auto sensorCompWp = addComponent<components::EnergySensor>(ANA_PIN);
 
 		/* Setup reset button */
@@ -34,22 +39,25 @@ namespace apps::emon
 
 		if (!ksApplication::init())
 			return false;
-				
+
 		ArduinoOTA.setHostname(EnergyMonitorConfig::emonDeviceName);
 		ArduinoOTA.setPassword("ota_ksiotframework");
 		ArduinoOTA.begin();
-		
+
+		/* Bind MQTT connect/disconnect events for LED status. */
 		if (auto mqttSp{mqttWp.lock()})
 		{
 			mqttSp->onConnected->registerEvent(connEventHandleSp, std::bind(&EnergyMonitorApp::onMqttConnected, this));
 			mqttSp->onDisconnected->registerEvent(disEventHandleSp, std::bind(&EnergyMonitorApp::onMqttDisconnected, this));
 		}
 
+		/* Set event LED. */
+		if (auto sensorCompSp{sensorCompWp.lock()})
+			sensorCompSp->setEventLED(eventLedWp);
+
+		/* Start blinking status LED. */
 		if (auto statusLedSp{statusLedWp.lock()})
 			statusLedSp->setBlinking(500);
-
-		if (auto sensorCompSp{sensorCompWp.lock()})
-			sensorCompSp->setEventLed(eventLedWp);
 
 		return true;
 	}

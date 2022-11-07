@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <limits>
 
 namespace apps::emon::components::utils
 {
@@ -24,18 +25,30 @@ namespace apps::emon::components::utils
 	class LineSensor
 	{
 		private:
-			LSMeasurementStage currentMeasurementStage{LSMeasurementStage::WAIT_PREWARM};
+			LSMeasurementStage currentStage{LSMeasurementStage::WAIT_PREWARM};		// Current measurement stage.
 
-			uint8_t pin{0};
+			uint8_t pin{std::numeric_limits<uint8_t>::max()};						// Pin number.
 			
-			uint16_t stabilizationCounter{0};
-			uint16_t lastValueIndex{0};
+			uint16_t stabilizationCounter{0};										// Counter for stabilization values.
+			uint16_t lastValueIndex{0};												// Last analog raw reading index.
 
-			std::vector<uint16_t> bufferedValues;
-			std::vector<uint16_t> dominantBuffer;
+			std::vector<uint16_t> bufferedValues;									// Last X value buffers for deviation calculation.
+			std::vector<uint16_t> dominantBuffer;									// Buffer for dominant calculation.
 
 		public:
+			/*
+				Constructs LineSensor.
+
+				@param probeCount Number of probes to calculate dominant.
+				@param maxValue Max analog value.
+				@param pin Analog pin number for the sensor.
+			*/
 			LineSensor(uint16_t probeCount, uint16_t maxValue, uint8_t pin);
+
+			/*
+				Handles all analog interpratation logic and returns if black line is detected.
+				@return True if black line has been detected. Otherwise false.
+			*/
 			bool triggered();
 	};
 }

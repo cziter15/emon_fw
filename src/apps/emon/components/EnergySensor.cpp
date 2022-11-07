@@ -19,7 +19,7 @@ namespace apps::emon::components
 		: lineSensor(EMON_SENSOR_PROBES, EMON_MAX_ANA_VALUE, pin)
 	{}
 
-	void EnergySensor::setEventLed(std::weak_ptr<ksf::comps::ksLed>& eventLedWp)
+	void EnergySensor::setEventLED(std::weak_ptr<ksf::comps::ksLed>& eventLedWp)
 	{
 		this->eventLedWp = eventLedWp;
 	}
