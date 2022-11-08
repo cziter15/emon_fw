@@ -1,7 +1,7 @@
 /*
  *	Copyright (c) 2021-2023, Krzysztof Strehlau
  *
- *	This file is part of the ksIotFramework library.
+ *	This file is part of the Energy Monitor firmware.
  *	All licensing information can be found inside LICENSE.md file.
  *
  *	https://github.com/cziter15/emon_fw/blob/master/LICENSE
@@ -10,10 +10,6 @@
 #include "LineSensor.h"
 #include <cmath>
 #include <Arduino.h>
-
-#define EMON_STABILIZATION_PROBE_COUNT 10
-#define EMON_DEVIATION_UPHILL 1.75f
-#define EMON_DEVIATION_STABILIZATION 1.1f
 
 namespace apps::emon::components::utils
 {

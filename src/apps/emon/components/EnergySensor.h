@@ -1,23 +1,16 @@
 /*
  *	Copyright (c) 2021-2023, Krzysztof Strehlau
  *
- *	This file is part of the ksIotFramework library.
+ *	This file is part of the Energy Monitor firmware.
  *	All licensing information can be found inside LICENSE.md file.
  *
- *	https://github.com/cziter15/raesp_gateway/blob/main/firmware/LICENSE
+ *	https://github.com/cziter15/emon_fw/blob/master/LICENSE
  */
 
 #pragma once
 
 #include <ksIotFrameworkLib.h>
 #include "utils/LineSensor.h"
-
-#define EMON_SENSOR_PROBES 400
-#define EMON_TIMER_INTERVAL 50
-#define EMON_MAX_ANA_VALUE 1024
-#define EMON_SENSOR_TOTALUPDATE 300000UL
-#define EMON_ZERO_WATTS_TIMEOUT 300000UL
-#define EMON_MS_PER_HOUR 3600000.0
 
 namespace apps::emon::components
 {
@@ -26,6 +19,13 @@ namespace apps::emon::components
 		KSF_RTTI_DECLARATIONS(EnergySensor, ksComponent)
 
 		protected:
+			static constexpr uint16_t EMON_SENSOR_PROBES{400};					// How probes required to calculate dominant.
+			static constexpr uint16_t EMON_TIMER_INTERVAL{50};					// Fast timer interval to measure ADC value.
+			static constexpr uint16_t EMON_MAX_ANA_VALUE{1024};					// This is in general MAX ADC value that can be read.
+			static constexpr uint32_t EMON_SENSOR_TOTALUPDATE{300000UL};		// Interval of publishing total kWh usage.
+			static constexpr uint32_t EMON_ZERO_WATTS_TIMEOUT{300000UL};		// Timeout value after which '0' watts will be published.
+			static constexpr double EMON_MS_PER_HOUR{3600000.0};				// Milliseconds in hour.
+
 			utils::LineSensor lineSensor;										// LineSensor utility, handles analog part.
 
 			unsigned short rotationsPerKwh{1};									// Rotation number per kWh.

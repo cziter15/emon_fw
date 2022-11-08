@@ -1,17 +1,16 @@
 /*
  *	Copyright (c) 2021-2023, Krzysztof Strehlau
  *
- *	This file is part of the ksIotFramework library.
+ *	This file is part of the Energy Monitor firmware.
  *	All licensing information can be found inside LICENSE.md file.
  *
- *	https://github.com/cziter15/raesp_gateway/blob/main/firmware/LICENSE
+ *	https://github.com/cziter15/emon_fw/blob/master/LICENSE
  */
 
 #include "EnergySensor.h"
 #include "../../config/EnergyMonitorConfigProvider.h"
 
 using namespace std::placeholders;
-using apps::config::EnergyMonitorConfigProvider;
 
 namespace apps::emon::components
 {
@@ -26,7 +25,7 @@ namespace apps::emon::components
 
 	bool EnergySensor::init(ksf::ksComposable* owner)
 	{
-		EnergyMonitorConfigProvider configProvider;
+		apps::config::EnergyMonitorConfigProvider configProvider;
 		configProvider.init(owner);
 
 		if (!configProvider.setupRotations(rotationsPerKwh))

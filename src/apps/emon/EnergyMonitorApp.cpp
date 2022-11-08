@@ -1,27 +1,27 @@
 /*
  *	Copyright (c) 2021-2023, Krzysztof Strehlau
  *
- *	This file is part of the ksIotFramework library.
+ *	This file is part of the Energy Monitor firmware.
  *	All licensing information can be found inside LICENSE.md file.
  *
  *	https://github.com/cziter15/emon_fw/blob/master/LICENSE
  */
+
 #include "board.h"
 #include <ksIotFrameworkLib.h>
 
 #include "EnergyMonitorApp.h"
-#include "../config/EnergyMonitorConfig.h"
 #include "components/EnergySensor.h"
+#include "../config/EnergyMonitorConfig.h"
 
 using namespace std::placeholders;
-using namespace apps::config;
 
 namespace apps::emon
 {
 	bool EnergyMonitorApp::init()
 	{
 		/* Add WiFi connector component. */
-		addComponent<ksf::comps::ksWifiConnector>(EnergyMonitorConfig::emonDeviceName);
+		addComponent<ksf::comps::ksWifiConnector>(apps::config::EnergyMonitorConfig::emonDeviceName);
 
 		/* Add MQTT components. */
 		addComponent<ksf::comps::ksMqttDebugResponder>();
@@ -40,7 +40,7 @@ namespace apps::emon
 		if (!ksApplication::init())
 			return false;
 
-		ArduinoOTA.setHostname(EnergyMonitorConfig::emonDeviceName);
+		ArduinoOTA.setHostname(apps::config::EnergyMonitorConfig::emonDeviceName);
 		ArduinoOTA.setPassword("ota_ksiotframework");
 		ArduinoOTA.begin();
 
