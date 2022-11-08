@@ -16,6 +16,7 @@
 #define EMON_TIMER_INTERVAL 50
 #define EMON_MAX_ANA_VALUE 1024
 #define EMON_SENSOR_TOTALUPDATE 300000UL
+#define EMON_ZERO_WATTS_TIMEOUT 300000UL
 #define EMON_MS_PER_HOUR 3600000.0
 
 namespace apps::emon::components
@@ -41,6 +42,7 @@ namespace apps::emon::components
 
 			ksf::ksSimpleTimer sensorTimer{EMON_TIMER_INTERVAL};				// Timer for sensor ticking.
 			ksf::ksSimpleTimer totalUpdateTimer{EMON_SENSOR_TOTALUPDATE};		// Timer for updaing total kWh.
+			ksf::ksSimpleTimer zeroWattsTimer{EMON_ZERO_WATTS_TIMEOUT};			// Timer to send '0' value when no rotation detected.
 
 			/*
 				Called when black line is detected.
