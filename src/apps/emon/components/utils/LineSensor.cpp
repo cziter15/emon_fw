@@ -27,7 +27,7 @@ namespace apps::emon::components::utils
 	void LineSensor::pushNewReading(uint16_t value)
 	{
 		/* Head value pointer assignment. */
-		auto headValPtr = &readingHistory[readingCounter % BUFFER_SIZE];
+		auto headValPtr = &readingHistory[readingCounter % readingHistory.size()];
 		
 		/* Assign tail occurence pointer. Decrement ocurrence for previous value. */
 		auto tailOccPtr = &occurencesTable[*headValPtr];
