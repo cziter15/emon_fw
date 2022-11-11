@@ -24,7 +24,7 @@ namespace apps::emon::components::utils
 		}
 	}
 
-	void LineSensor::insertNewReading(uint16_t value)
+	void LineSensor::pushNewReading(uint16_t value)
 	{
 		/* Head value pointer assignment. */
 		auto headValPtr = &readingHistory[iteration % BUFFER_SIZE];
