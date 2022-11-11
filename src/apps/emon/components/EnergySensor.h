@@ -21,7 +21,7 @@ namespace apps::emon::components
 		protected:
 			static constexpr uint16_t EMON_SENSOR_PROBES{400};					// How probes required to calculate dominant.
 			static constexpr uint16_t EMON_TIMER_INTERVAL{50};					// Fast timer interval to measure ADC value.
-			static constexpr uint16_t EMON_MAX_ANA_VALUE{1024};					// This is in general MAX ADC value that can be read.
+			static constexpr uint16_t EMON_MAX_DAC_VALUE{1024};					// This is in general MAX ADC value that can be read.
 			static constexpr uint32_t EMON_SENSOR_TOTALUPDATE{300000UL};		// Interval of publishing total kWh usage.
 			static constexpr uint32_t EMON_ZERO_WATTS_TIMEOUT{300000UL};		// Timeout value after which '0' watts will be published.
 			static constexpr double EMON_MS_PER_HOUR{3600000.0};				// Milliseconds in hour.

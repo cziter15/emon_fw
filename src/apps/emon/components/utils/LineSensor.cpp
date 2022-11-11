@@ -16,52 +16,68 @@ namespace apps::emon::components::utils
 	LineSensor::LineSensor(uint16_t probeCount, uint16_t maxValue, uint8_t pin)
 		: pin(pin)
 	{
-		bufferedValues.resize(probeCount);
-		dominantBuffer.resize(maxValue);
-		
 		if (pin != std::numeric_limits<uint8_t>::max())
+		{
+			readingHistory.resize(probeCount);
+			occurencesTable.resize(maxValue);
 			pinMode(pin, INPUT);
+		}
+	}
+
+	void LineSensor::insertNewReading(uint16_t value)
+	{
+		/* Head value pointer assignment. */
+		auto headValPtr = &readingHistory[iteration % BUFFER_SIZE];
+		
+		/* Assign tail occurence pointer. Decrement ocurrence for previous value. */
+		auto tailOccPtr = &occurencesTable[*headValPtr];
+		if (*tailOccPtr > 0) --*tailOccPtr;
+		
+		/* Replace head value with new one. */
+		*headValPtr = value;
+		++occurencesTable[value];
+		
+		/* Increment iteration count.  */
+		++iteration;
+	}
+
+	uint16_t LineSensor::calculateModal() const
+	{
+		uint16_t modal{0};
+		for (std::size_t i{0}; i < occurencesTable.size(); i++)
+		{
+			if (occurencesTable[i] > modal)
+				modal = i;
+		}
+
+		return modal;
+	}
+
+	float LineSensor::calculateDeviation(uint16_t value) const
+	{
+		return value / static_cast<float>(calculateModal());
 	}
 
 	bool LineSensor::triggered()
 	{
-		if (pin == std::numeric_limits<uint8_t>::max())
+		if (occurencesTable.empty()) 
 			return false;
-
-		uint16_t dominant{0};
-		auto anaValue{static_cast<uint16_t>(analogRead(pin))};
-
-		bufferedValues[lastValueIndex++ % bufferedValues.size()] = anaValue;
-		std::fill(std::begin(dominantBuffer), std::end(dominantBuffer), 0);
-
-		for (std::size_t i{0}; i < bufferedValues.size(); i++)
-		{
-			uint16_t currentValue{bufferedValues[i]};
-
-			if (currentValue < dominantBuffer.size()) 
-				dominantBuffer[currentValue]++;
-		}
-
-		for (std::size_t i{0}; i < dominantBuffer.size(); i++)
-		{
-			if (dominantBuffer[i] > dominant)
-				dominant = i;
-		}
-
-		float currentDeviation{static_cast<float>(anaValue) / static_cast<float>(dominant)};
+		
+		auto dacValue{static_cast<uint16_t>(analogRead(pin))};
+		pushNewReading(dacValue);
 
 		switch (currentStage)
 		{
 			case LSMeasurementStage::WAIT_PREWARM:
 			{
-				if (lastValueIndex > bufferedValues.size())
+				if (iteration > readingHistory.size())
 					currentStage = LSMeasurementStage::WAIT_STABILIZE;
 			}
 			break;
 
 			case LSMeasurementStage::WAIT_STABILIZE:
 			{
-				if (fabsf(currentDeviation) <= EMON_DEVIATION_STABILIZATION)
+				if (calculateDeviation(dacValue) <= EMON_DEVIATION_STABILIZATION)
 				{
 					if (++stabilizationCounter >= EMON_STABILIZATION_PROBE_COUNT)
 					{
@@ -74,7 +90,7 @@ namespace apps::emon::components::utils
 
 			case LSMeasurementStage::WAIT_UPHILL:
 			{
-				if (fabsf(currentDeviation) > EMON_DEVIATION_UPHILL)
+				if (calculateDeviation(dacValue) > EMON_DEVIATION_UPHILL)
 				{
 					currentStage = LSMeasurementStage::WAIT_STABILIZE;
 					return true;

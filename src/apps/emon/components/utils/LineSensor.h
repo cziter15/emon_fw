@@ -33,11 +33,16 @@ namespace apps::emon::components::utils
 
 			uint8_t pin{std::numeric_limits<uint8_t>::max()};						// Pin number.
 			
-			uint16_t stabilizationCounter{0};										// Counter for stabilization values.
-			uint16_t lastValueIndex{0};												// Last analog raw reading index.
+			uint16_t readingCounter{0};												// Reading counter (will overflow).
+			uint16_t stabilizationCounter{0};										// Counter of values for stabilization.
 
-			std::vector<uint16_t> bufferedValues;									// Last X value buffers for deviation calculation.
-			std::vector<uint16_t> dominantBuffer;									// Buffer for dominant calculation.
+			std::vector<uint16_t> readingHistory;									// Last X value buffers for deviation calculation.
+			std::vector<uint16_t> occurencesTable;									// Buffer for dominant calculation.
+
+			void pushNewReading(uint16_t value);
+
+			uint16_t calculateModal() const;
+			float calculateDeviation(uint16_t value) const;
 
 		public:
 			/*

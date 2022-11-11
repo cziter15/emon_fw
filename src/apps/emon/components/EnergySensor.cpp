@@ -15,7 +15,7 @@ using namespace std::placeholders;
 namespace apps::emon::components
 {
 	EnergySensor::EnergySensor(uint8_t pin)
-		: lineSensor(EMON_SENSOR_PROBES, EMON_MAX_ANA_VALUE, pin)
+		: lineSensor(EMON_SENSOR_PROBES, EMON_MAX_DAC_VALUE, pin)
 	{}
 
 	void EnergySensor::setEventLED(std::weak_ptr<ksf::comps::ksLed>& eventLedWp)
