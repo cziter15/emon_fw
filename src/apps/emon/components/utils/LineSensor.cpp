@@ -27,7 +27,7 @@ namespace apps::emon::components::utils
 	void LineSensor::pushNewReading(uint16_t value)
 	{
 		/* Head value pointer assignment. */
-		auto headValPtr = &readingHistory[iteration % BUFFER_SIZE];
+		auto headValPtr = &readingHistory[readingCounter % BUFFER_SIZE];
 		
 		/* Assign tail occurence pointer. Decrement ocurrence for previous value. */
 		auto tailOccPtr = &occurencesTable[*headValPtr];
@@ -37,8 +37,8 @@ namespace apps::emon::components::utils
 		*headValPtr = value;
 		++occurencesTable[value];
 		
-		/* Increment iteration count.  */
-		++iteration;
+		/* Increment readingCounter.  */
+		++readingCounter;
 	}
 
 	uint16_t LineSensor::calculateModal() const
@@ -70,7 +70,7 @@ namespace apps::emon::components::utils
 		{
 			case LSMeasurementStage::WAIT_PREWARM:
 			{
-				if (iteration > readingHistory.size())
+				if (readingCounter > readingHistory.size())
 					currentStage = LSMeasurementStage::WAIT_STABILIZE;
 			}
 			break;
