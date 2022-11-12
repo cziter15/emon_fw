@@ -10,7 +10,7 @@
 #pragma once
 
 #include <ksIotFrameworkLib.h>
-#include "utils/LineSensor.h"
+#include "utils/PlateSpinSensor.h"
 
 namespace apps::emon::components
 {
@@ -19,15 +19,11 @@ namespace apps::emon::components
 		KSF_RTTI_DECLARATIONS(EnergySensor, ksComponent)
 
 		protected:
-			static constexpr uint16_t ADC_HISTORY_PROBES{400};					// How probes required to calculate dominant.
-			static constexpr uint16_t MS_ADC_READ_INTERVAL{50};					// Fast timer interval to measure ADC value.
-			static constexpr uint16_t MAX_ADC_VALUE{1024};						// This is in general MAX ADC value that can be read.
-			
-			static constexpr uint32_t MS_SENSOR_TOTALUPDATE{300000UL};			// Interval of publishing total kWh usage.
+			static constexpr uint32_t MS_KWH_UPDATE_INTERVAL{300000UL};			// Interval of publishing total kWh usage.
 			static constexpr uint32_t MS_ZERO_WATTS_TIMEOUT{300000UL};			// Timeout value after which '0' watts will be published.
 			static constexpr double MS_PER_HOUR{3600000.0};						// Milliseconds in hour.
 
-			utils::LineSensor plateRotationSensor;								// Sensor utility, handles analog part.
+			utils::PlateSpinSensor plateSpinSensor;								// Sensor utility, handles analog part.
 
 			unsigned short rotationsPerKwh{1};									// Rotation number per kWh.
 			double initialKwh{-1.0};											// Initial kWh count (read from MQTT).
@@ -41,8 +37,7 @@ namespace apps::emon::components
 			std::shared_ptr<ksf::evt::ksEventHandle> connEventHandleSp;			// MQTT onConnection event handler.
 			std::shared_ptr<ksf::evt::ksEventHandle> msgEventHandleSp;			// MQTT onMessage event handler.
 
-			ksf::ksSimpleTimer sensorTimer{MS_ADC_READ_INTERVAL};				// Timer for sensor ticking.
-			ksf::ksSimpleTimer totalUpdateTimer{MS_SENSOR_TOTALUPDATE};			// Timer for updaing total kWh.
+			ksf::ksSimpleTimer totalUpdateTimer{MS_KWH_UPDATE_INTERVAL};		// Timer for updaing total kWh.
 			ksf::ksSimpleTimer zeroWattsTimer{MS_ZERO_WATTS_TIMEOUT};			// Timer to send '0' value when no rotation detected.
 
 			/*

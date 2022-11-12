@@ -7,24 +7,21 @@
  *	https://github.com/cziter15/emon_fw/blob/master/LICENSE
  */
 
-#include "LineSensor.h"
+#include "PlateSpinSensor.h"
 #include <cmath>
 #include <Arduino.h>
 
 namespace apps::emon::components::utils
 {
-	LineSensor::LineSensor(uint16_t probeCount, uint16_t maxValue, uint8_t pin)
+	PlateSpinSensor::PlateSpinSensor(uint8_t pin)
 		: pin(pin)
 	{
-		if (pin != std::numeric_limits<uint8_t>::max())
-		{
-			readingHistory.resize(probeCount);
-			occurencesTable.resize(maxValue);
-			pinMode(pin, INPUT);
-		}
+		readingHistory.resize(ADC_HISTORY_PROBES);
+		occurencesTable.resize(MAX_ADC_VALUE);
+		pinMode(pin, INPUT);
 	}
 
-	void LineSensor::pushReading(uint16_t value)
+	void PlateSpinSensor::pushReading(uint16_t value)
 	{
 		/* Head value pointer assignment. */
 		auto headValPtr = &readingHistory[readingCounter % readingHistory.size()];
@@ -41,10 +38,15 @@ namespace apps::emon::components::utils
 		++readingCounter;
 	}
 
-	uint16_t LineSensor::findModal() const
+	uint16_t PlateSpinSensor::findModal() const
 	{
 		uint16_t modal{0};
-		for (std::size_t i{0}; i < occurencesTable.size(); i++)
+
+		/* 
+			Minimal analog reading is zero. To get modal simply return index which
+			holds highest measured value in historical reading data.
+		*/
+		for (std::size_t i{0}; i < occurencesTable.size(); ++i)
 		{
 			if (occurencesTable[i] > modal)
 				modal = i;
@@ -53,16 +55,18 @@ namespace apps::emon::components::utils
 		return modal;
 	}
 
-	float LineSensor::calcValueRatio(uint16_t value) const
+	float PlateSpinSensor::calcValueRatio(uint16_t value) const
 	{
 		return value / static_cast<float>(findModal());
 	}
 
-	bool LineSensor::triggered()
+	bool PlateSpinSensor::triggered()
 	{
-		if (occurencesTable.empty()) 
+		/* Do the work only i sensorTimer expired (otherwise skip and return false). */
+		if (!sensorTimer.triggered())
 			return false;
 		
+		/* Read analog value and push it to the history handling mechanism. */
 		auto dacValue{static_cast<uint16_t>(analogRead(pin))};
 		pushReading(dacValue);
 

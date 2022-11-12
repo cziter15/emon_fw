@@ -15,7 +15,7 @@ using namespace std::placeholders;
 namespace apps::emon::components
 {
 	EnergySensor::EnergySensor(uint8_t pin)
-		: plateRotationSensor(ADC_HISTORY_PROBES, MAX_ADC_VALUE, pin)
+		: plateSpinSensor(pin)
 	{}
 
 	void EnergySensor::setEventLED(std::weak_ptr<ksf::comps::ksLed>& eventLedWp)
@@ -100,7 +100,7 @@ namespace apps::emon::components
 
 	bool EnergySensor::loop()
 	{
-		if (sensorTimer.triggered() && plateRotationSensor.triggered())
+		if (plateSpinSensor.triggered())
 		{
 			onBlackLineDetected();
 			zeroWattsTimer.restart();

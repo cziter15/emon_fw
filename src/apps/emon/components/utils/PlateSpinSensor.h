@@ -39,22 +39,27 @@ namespace apps::emon::components::utils
 		WaitForUphill
 	};
 	
-	class LineSensor
+	class PlateSpinSensor
 	{
 		private:
+			static constexpr uint16_t ADC_HISTORY_PROBES{400};				// How probes required to calculate dominant.
+			static constexpr uint16_t MS_ADC_READ_INTERVAL{50};				// Fast timer interval to measure ADC value.
+			static constexpr uint16_t MAX_ADC_VALUE{1024};					// This is in general MAX ADC value that can be read.
+			
 			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};			// How many stable values required to mark trend as 'stable'.
 			static constexpr float RATIO_UPHILL_TRESHOLD{1.75f};			// Ratio treshold to mark all values above as UPHILL.
 			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};				// Ratio treshold to mark all values below as STABLE.
 
-			LSMStage currentStage{LSMStage::CollectInitialValues};			// Current measurement stage.
-
 			uint8_t pin{std::numeric_limits<uint8_t>::max()};				// Pin number.
 			
+			LSMStage currentStage{LSMStage::CollectInitialValues};			// Current measurement stage.
 			uint16_t readingCounter{0};										// Reading counter (will overflow).
 			uint16_t stabilizationCounter{0};								// Counter of values for stabilization.
 
 			std::vector<uint16_t> readingHistory;							// Reading history (max size defined in ctor).
 			std::vector<uint16_t> occurencesTable;							// Buffer for modal value calculation.
+
+			ksf::ksSimpleTimer sensorTimer{MS_ADC_READ_INTERVAL};			// Timer for sensor ticking.
 
 			/*
 				Replaces a value in reading history (works like circular buffer).
@@ -79,13 +84,11 @@ namespace apps::emon::components::utils
 
 		public:
 			/*
-				Constructs LineSensor.
+				Constructs PlateSpinSensor.
 
-				@param probeCount Number of probes to calculate dominant.
-				@param maxValue Max analog value.
 				@param pin Analog pin number for the sensor.
 			*/
-			LineSensor(uint16_t probeCount, uint16_t maxValue, uint8_t pin);
+			PlateSpinSensor(uint8_t pin);
 
 			/*
 				Handles all analog interpratation logic and returns if black line is detected.
