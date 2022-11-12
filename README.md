@@ -6,22 +6,13 @@
 
 ## Description
 
-Inspired by other project, that counts rotations of energy meter's ring, I've decided to create my own esp-based board doing the same.
+This project is one of my first more serious hobby designs based on ESP8266 and has been built to bring telemetric to an old mechanical energy meter. It has spinning plate, which has one small black mark on it's edge. The time between previous and current edge pass under the sensor can be used to calculate enery usage. All we need to know is the number of crossings per kilowatt-hour. The value is usually written on meter's nameplate.
 
-First board revision based on digital readings, this technique however, introduced many problems, because it was very light-sensitive. Bright sunlight sometimes affected measurements.
+My device uses TCRT5000 sensor, which is connected to the board using 3 wires (5V, A_IN and GND). Updated revision uses analog readings, because fixed treshold is unreliable in my use case as it is affected by sunlight.
 
-Second revision uses ADC instead, so I can detect rotations more precisely. From EMI perspective this board is designed better. I've had few troubles soldering this, because it failed to start for the first time - due to wrong AMS1117 version ordered. However I've managed to replace this IC with correct one.
+It took me some time to develop algorithm that is resistant to sunlight interferences. I've ended up with circular buffer of analog values used to calculate modal, which is then used to determine stage of spinning plate.
 
-Along with hardware-part, I'm working on software - framework for IoT devices like this one, so end user application might be developed fairly quick!
-
-### Reuqirements
-- MMU 16 KB Cache + 48 KB IRAM and 2nd Heap
-- Flash: 4 MB (1MB FS, OTA: 1019 KB)
-- CPU: 80 MHz
-- SDK: 191122
-- LWIP: 2 (lower rom use)
-- VTables: IRAM
-- Non32 Bit access (Use pgm read)
+PCB design publication is not planned at this time.
 
 ## See project on hackaday
 https://hackaday.io/project/175653-iot-for-old-energy-meter

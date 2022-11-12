@@ -21,19 +21,19 @@ namespace apps::emon::components::utils
 
 	void PlateSpinSensor::pushReading(uint16_t value)
 	{
-		/* Head value pointer assignment. */
-		auto headValPtr = &readingHistory[readingCounter % readingHistory.size()];
+		/* Get a pointer to the value pointed by reading counter modulo. */
+		auto historyValuePtr = &readingHistory[totalReadingCount % readingHistory.size()];
 		
-		/* Assign tail occurence pointer. Decrement ocurrence for previous value. */
-		auto tailOccPtr = &occurencesTable[*headValPtr];
-		if (*tailOccPtr > 0) --*tailOccPtr;
+		/* Decrement occurence of the value that will be replaced by new reading. */
+		auto historyValOccurrencePtr = &occurencesTable[*historyValuePtr];
+		if (*historyValOccurrencePtr > 0) --*historyValOccurrencePtr;
 		
-		/* Replace head value with new one. */
-		*headValPtr = value;
+		/* Replace the value and increment occurences. */
+		*historyValuePtr = value;
 		++occurencesTable[value];
 		
-		/* Increment readingCounter.  */
-		++readingCounter;
+		/* Increment reading count.  */
+		++totalReadingCount;
 	}
 
 	uint16_t PlateSpinSensor::findModal() const
@@ -60,8 +60,8 @@ namespace apps::emon::components::utils
 
 	bool PlateSpinSensor::triggered()
 	{
-		/* Do the work only i sensorTimer expired (otherwise skip and return false). */
-		if (!sensorTimer.triggered())
+		/* Do the work only if interval passed (otherwise skip and return false). */
+		if (!probeInterval.triggered())
 			return false;
 		
 		/* Read analog value and push it to the history handling mechanism. */
@@ -72,8 +72,8 @@ namespace apps::emon::components::utils
 		{
 			case LSMStage::CollectInitialValues:
 			{
-				/* Simply wait until readingCounter reaches required history size. */
-				if (readingCounter > readingHistory.size())
+				/* Simply wait until reading count reaches required history size. */
+				if (totalReadingCount > readingHistory.size())
 					currentStage = LSMStage::WaitForStabilization;
 			}
 			break;
@@ -83,15 +83,15 @@ namespace apps::emon::components::utils
 				/* If value is above treshold, then reset counter and wait agian. */
 				if (calcValueRatio(dacValue) > RATIO_STABLE_TRESHOLD)
 				{
-					stabilizationCounter = 0; // TODO: verify on device
+					stableProbesCount = 0; // TODO: verify on device
 					break;
 				}
 
-				/* If value is below treshold as required, then wait for defined probes in a row. */
-				if (++stabilizationCounter >= STABLE_PROBES_REQUIRED)
+				/* If value is below treshold, then wait for defined probes in a row. */
+				if (++stableProbesCount >= STABLE_PROBES_REQUIRED)
 				{
 					currentStage = LSMStage::WaitForUphill;
-					stabilizationCounter = 0;
+					stableProbesCount = 0;
 				}
 			}
 			break;
