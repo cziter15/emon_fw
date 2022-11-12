@@ -68,15 +68,15 @@ namespace apps::emon::components::utils
 
 		switch (currentStage)
 		{
-			case LSStage::CollectInitialValues:
+			case LSMStage::CollectInitialValues:
 			{
 				/* Simply wait until readingCounter reaches required history size. */
 				if (readingCounter > readingHistory.size())
-					currentStage = LSMeasurementStage::WaitForStabilization;
+					currentStage = LSMStage::WaitForStabilization;
 			}
 			break;
 
-			case LSStage::WaitForStabilization:
+			case LSMStage::WaitForStabilization:
 			{
 				/* If value is above treshold, then reset counter and wait agian. */
 				if (calcValueRatio(dacValue) > RATIO_STABLE_TRESHOLD)
@@ -88,13 +88,13 @@ namespace apps::emon::components::utils
 				/* If value is below treshold as required, then wait for defined probes in a row. */
 				if (++stabilizationCounter >= STABLE_PROBES_REQUIRED)
 				{
-					currentStage = LSStage::WaitForUphill;
+					currentStage = LSMStage::WaitForUphill;
 					stabilizationCounter = 0;
 				}
 			}
 			break;
 
-			case LSStage::WaitForUphill:
+			case LSMStage::WaitForUphill:
 			{
 				/* 
 					Simply wait for uphill. Then switch to waiting for stabilization again and
@@ -102,7 +102,7 @@ namespace apps::emon::components::utils
 				*/
 				if (calcValueRatio(dacValue) > RATIO_UPHILL_TRESHOLD)
 				{
-					currentStage = LSStage::WaitForStabilization;
+					currentStage = LSMStage::WaitForStabilization;
 					return true;
 				}
 			}
