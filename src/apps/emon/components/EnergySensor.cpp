@@ -73,7 +73,7 @@ namespace apps::emon::components
 	void EnergySensor::onBlackLineDetected()
 	{
 		auto pulseTime{(millis() - lastPulseTime)};
-		updateCurrentUsage(EMON_MS_PER_HOUR / (rotationsPerKwh * pulseTime) * 1000.0);
+		updateCurrentUsage(MS_PER_HOUR / (rotationsPerKwh * pulseTime) * 1000.0);
 
 		++totalPulseCount;
 
