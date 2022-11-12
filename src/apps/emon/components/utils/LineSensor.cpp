@@ -24,7 +24,7 @@ namespace apps::emon::components::utils
 		}
 	}
 
-	void LineSensor::pushNewReading(uint16_t value)
+	void LineSensor::pushReading(uint16_t value)
 	{
 		/* Head value pointer assignment. */
 		auto headValPtr = &readingHistory[readingCounter % readingHistory.size()];
@@ -41,7 +41,7 @@ namespace apps::emon::components::utils
 		++readingCounter;
 	}
 
-	uint16_t LineSensor::calculateModal() const
+	uint16_t LineSensor::findModal() const
 	{
 		uint16_t modal{0};
 		for (std::size_t i{0}; i < occurencesTable.size(); i++)
@@ -53,9 +53,9 @@ namespace apps::emon::components::utils
 		return modal;
 	}
 
-	float LineSensor::calculateDeviation(uint16_t value) const
+	float LineSensor::calcValueRatio(uint16_t value) const
 	{
-		return value / static_cast<float>(calculateModal());
+		return value / static_cast<float>(findModal());
 	}
 
 	bool LineSensor::triggered()
@@ -64,35 +64,45 @@ namespace apps::emon::components::utils
 			return false;
 		
 		auto dacValue{static_cast<uint16_t>(analogRead(pin))};
-		pushNewReading(dacValue);
+		pushReading(dacValue);
 
 		switch (currentStage)
 		{
-			case LSMeasurementStage::WAIT_PREWARM:
+			case LSStage::CollectInitialValues:
 			{
+				/* Simply wait until readingCounter reaches required history size. */
 				if (readingCounter > readingHistory.size())
-					currentStage = LSMeasurementStage::WAIT_STABILIZE;
+					currentStage = LSMeasurementStage::WaitForStabilization;
 			}
 			break;
 
-			case LSMeasurementStage::WAIT_STABILIZE:
+			case LSStage::WaitForStabilization:
 			{
-				if (calculateDeviation(dacValue) <= EMON_DEVIATION_STABILIZATION)
+				/* If value is above treshold, then reset counter and wait agian. */
+				if (calcValueRatio(dacValue) > RATIO_STABLE_TRESHOLD)
 				{
-					if (++stabilizationCounter >= EMON_STABILIZATION_PROBE_COUNT)
-					{
-						currentStage = LSMeasurementStage::WAIT_UPHILL;
-						stabilizationCounter = 0;
-					}
+					stabilizationCounter = 0; // TODO: verify on device
+					break;
+				}
+
+				/* If value is below treshold as required, then wait for defined probes in a row. */
+				if (++stabilizationCounter >= STABLE_PROBES_REQUIRED)
+				{
+					currentStage = LSStage::WaitForUphill;
+					stabilizationCounter = 0;
 				}
 			}
 			break;
 
-			case LSMeasurementStage::WAIT_UPHILL:
+			case LSStage::WaitForUphill:
 			{
-				if (calculateDeviation(dacValue) > EMON_DEVIATION_UPHILL)
+				/* 
+					Simply wait for uphill. Then switch to waiting for stabilization again and
+					return true to trigger behavior to be executed on detection.
+				*/
+				if (calcValueRatio(dacValue) > RATIO_UPHILL_TRESHOLD)
 				{
-					currentStage = LSMeasurementStage::WAIT_STABILIZE;
+					currentStage = LSStage::WaitForStabilization;
 					return true;
 				}
 			}

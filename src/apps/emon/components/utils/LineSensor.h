@@ -15,34 +15,67 @@
 
 namespace apps::emon::components::utils
 {
-	enum class LSMeasurementStage
+	enum class LSMStage
 	{
-		WAIT_PREWARM,
-		WAIT_UPHILL,
-		WAIT_STABILIZE
+		/*
+			Ocurrence table must be filled with data before calculating modal
+			value. Otherwise false positive results will be triggered.
+		*/
+		CollectInitialValues,
+
+		/*
+			In this state we wait for trend stabilisation ('like flat line').
+			After uphill detection the value should fall down and stabilize for a while.
+			At least STABLE_PROBES_REQUIRED readings should be below RATIO_STABLE_TRESHOLD.
+			If this condition is met, we again should wait for uphill.
+		*/
+		WaitForStabilization,
+
+		/*
+			In this step we wait for significant value increase. Significant increase
+			means that plack part of the spinning plate is right under the sensor.
+			In this case we should switch state to WaitForStabilization.
+		*/
+		WaitForUphill
 	};
 	
 	class LineSensor
 	{
 		private:
-			static constexpr uint16_t EMON_STABILIZATION_PROBE_COUNT{10};			// How many stable values required to mark 'stable'.
-			static constexpr float EMON_DEVIATION_UPHILL{1.75f};					// Deviation to detect 'rising' state.
-			static constexpr float EMON_DEVIATION_STABILIZATION{1.1f};				// Max deviation to detect 'stable' state.
+			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};			// How many stable values required to mark trend as 'stable'.
+			static constexpr float RATIO_UPHILL_TRESHOLD{1.75f};			// Ratio treshold to mark all values above as UPHILL.
+			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};				// Ratio treshold to mark all values below as STABLE.
 
-			LSMeasurementStage currentStage{LSMeasurementStage::WAIT_PREWARM};		// Current measurement stage.
+			LSMStage currentStage{LSMStage::CollectInitialValues};			// Current measurement stage.
 
-			uint8_t pin{std::numeric_limits<uint8_t>::max()};						// Pin number.
+			uint8_t pin{std::numeric_limits<uint8_t>::max()};				// Pin number.
 			
-			uint16_t readingCounter{0};												// Reading counter (will overflow).
-			uint16_t stabilizationCounter{0};										// Counter of values for stabilization.
+			uint16_t readingCounter{0};										// Reading counter (will overflow).
+			uint16_t stabilizationCounter{0};								// Counter of values for stabilization.
 
-			std::vector<uint16_t> readingHistory;									// Last X value buffers for deviation calculation.
-			std::vector<uint16_t> occurencesTable;									// Buffer for dominant calculation.
+			std::vector<uint16_t> readingHistory;							// Reading history (max size defined in ctor).
+			std::vector<uint16_t> occurencesTable;							// Buffer for modal value calculation.
 
-			void pushNewReading(uint16_t value);
+			/*
+				Replaces a value in reading history (works like circular buffer).
+				Handles counter increment/decremnt occurencesTable.
+				@param value New reading value.
+			*/
+			void pushReading(uint16_t value);
 
-			uint16_t calculateModal() const;
-			float calculateDeviation(uint16_t value) const;
+			/*
+				Iterates over occcurences table most common value in reading history.
+				@return Most common value in readingHistory.
+			*/
+			uint16_t findModal() const;
+
+			/*
+				Calculates ratio of passed value to the most common value in reading history.
+
+				@param value Input value.
+				@return Calculated ratio (passed value) / (dominant in reading history).
+			*/
+			float calcValueRatio(uint16_t value) const;
 
 		public:
 			/*
