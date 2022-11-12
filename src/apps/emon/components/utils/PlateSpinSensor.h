@@ -9,9 +9,7 @@
 
 #pragma once
 
-#include <cstdint>
-#include <limits>
-#include <vector>
+#include <ksIotFrameworkLib.h>
 
 namespace apps::emon::components::utils
 {

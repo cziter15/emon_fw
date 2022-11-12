@@ -8,8 +8,6 @@
  */
 
 #include "PlateSpinSensor.h"
-#include <cmath>
-#include <Arduino.h>
 
 namespace apps::emon::components::utils
 {
