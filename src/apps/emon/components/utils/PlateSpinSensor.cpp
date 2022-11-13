@@ -15,24 +15,24 @@ namespace apps::emon::components::utils
 		: pin(pin)
 	{
 		readingHistory.resize(ADC_HISTORY_PROBES);
-		occurencesTable.resize(MAX_ADC_VALUE);
+		occurenceTable.resize(MAX_ADC_VALUE);
 		pinMode(pin, INPUT);
 	}
 
-	void PlateSpinSensor::pushReading(uint16_t value)
+	void PlateSpinSensor::processNewProbe(uint16_t value)
 	{
-		/* Get a pointer to the value pointed by reading counter modulo. */
-		auto historyValuePtr = &readingHistory[totalReadingCount % readingHistory.size()];
+		/* Get a pointer to the value currently indexed. */
+		auto indexedFieldPtr = &readingHistory[totalReadingCount % readingHistory.size()];
 		
 		/* Decrement occurence of the value that will be replaced by new reading. */
-		auto historyValOccurrencePtr = &occurencesTable[*historyValuePtr];
-		if (*historyValOccurrencePtr > 0) --*historyValOccurrencePtr;
+		auto oldValOccurrencePtr = &occurenceTable[*indexedFieldPtr];
+		if (*oldValOccurrencePtr > 0) --*oldValOccurrencePtr;
 		
 		/* Replace the value and increment occurences. */
-		*historyValuePtr = value;
-		++occurencesTable[value];
+		*indexedFieldPtr = value;
+		++occurenceTable[value];
 		
-		/* Increment reading count.  */
+		/* Increment reading count. */
 		++totalReadingCount;
 	}
 
@@ -44,9 +44,9 @@ namespace apps::emon::components::utils
 			Minimal analog reading is zero. To get modal simply return index which
 			holds highest measured value in historical reading data.
 		*/
-		for (std::size_t i{0}; i < occurencesTable.size(); ++i)
+		for (std::size_t i{0}; i < occurenceTable.size(); ++i)
 		{
-			if (occurencesTable[i] > modal)
+			if (occurenceTable[i] > modal)
 				modal = i;
 		}
 
@@ -64,9 +64,9 @@ namespace apps::emon::components::utils
 		if (!probeInterval.triggered())
 			return false;
 		
-		/* Read analog value and push it to the history handling mechanism. */
+		/* Read analog value and process it for modal calculation mechanism. */
 		auto dacValue{static_cast<uint16_t>(analogRead(pin))};
-		pushReading(dacValue);
+		processNewProbe(dacValue);
 
 		/* Switch-based simple state machine. */
 		switch (currentStage)

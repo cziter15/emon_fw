@@ -31,7 +31,7 @@ namespace apps::emon::components::utils
 
 		/*
 			In this step we wait for significant value increase. Significant increase
-			means that plack part of the spinning plate is right under the sensor.
+			means that black part of the spinning plate is right under the sensor.
 			In this case we should switch state to WaitForStabilization.
 		*/
 		WaitForUphill
@@ -55,7 +55,7 @@ namespace apps::emon::components::utils
 			uint16_t stableProbesCount{0};									// Counter of values for stabilization.
 
 			std::vector<uint16_t> readingHistory;							// Reading history (max size defined in ctor).
-			std::vector<uint16_t> occurencesTable;							// Buffer for modal value calculation.
+			std::vector<uint16_t> occurenceTable;							// Buffer for modal value calculation.
 
 			ksf::ksSimpleTimer probeInterval{MS_ADC_READ_INTERVAL};			// Timer for sensor ticking.
 
@@ -64,7 +64,7 @@ namespace apps::emon::components::utils
 				Handles counter increment/decremnt occurencesTable.
 				@param value New reading value.
 			*/
-			void pushReading(uint16_t value);
+			void processNewProbe(uint16_t value);
 
 			/*
 				Iterates over occcurences table most common value in reading history.
