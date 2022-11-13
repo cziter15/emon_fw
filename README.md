@@ -4,15 +4,24 @@
 [![Hits-of-Code](https://hitsofcode.com/github/cziter15/emon_fw)](https://hitsofcode.com/github/cziter15/emon_fw/view)
 [![Device Firmware](https://github.com/cziter15/emon_fw/actions/workflows/main.yml/badge.svg)](https://github.com/cziter15/emon_fw/actions/workflows/main.yml)
 
-## Description
+## What is it?
+This project brings automated remote telemetry reading to an old mechanical Energy Meter we have in our home.
 
+## Hardware design
 This project is one of my first more serious hobby designs based on ESP8266 and has been built to bring telemetric to an old mechanical energy meter. It has spinning plate, which has one small black mark on it's edge. The time between previous and current edge pass under the sensor can be used to calculate enery usage. All we need to know is the number of crossings per kilowatt-hour. The value is usually written on meter's nameplate.
 
-My device uses TCRT5000 sensor, which is connected to the board using 3 wires (5V, A_IN and GND). Updated revision uses analog readings, because fixed treshold is unreliable in my use case as it is affected by sunlight.
+My device uses TCRT5000 - IR reflective sensor module, which is connected to the board using 3 wires (5V, A_IN and GND). Updated revision uses analog readings, because fixed treshold is unreliable in my use case as it is affected by sunlight.
 
 It took me some time to develop algorithm that is resistant to sunlight interferences. I've ended up with circular buffer of analog values used to calculate modal, which is then used to determine stage of spinning plate.
 
 PCB design publication is not planned at this time.
+
+## Software design
+Software is based on ksIotFrameworkLib which helps a lot in assemblying firmware for such devices. Upon start application instantiates few components - energy sensor component, mqtt connector, mqtt debug commands component and LED driving component.
+
+The Energy Sensor component detects each rotation of spinning plate, calculates time difference between rotations and then is able to calculate power usage.
+
+Under the hood, there's also a class handling processing of analog signal. In my case (as the TCRT5000 can be sometimes exposed to sunlight), simple value comparsion doesn't work. I had to develop trend calculation algorithm to be able to filter interferences of daylight changes. It can still exceptionally produce some invalid values, but reduces them drastically.
 
 ## See project on hackaday
 https://hackaday.io/project/175653-iot-for-old-energy-meter
