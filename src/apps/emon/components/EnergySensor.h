@@ -10,6 +10,7 @@
 #pragma once
 
 #include <ksIotFrameworkLib.h>
+#include <optional>
 #include "utils/PlateSpinSensor.h"
 
 namespace apps::emon::components
@@ -26,9 +27,9 @@ namespace apps::emon::components
 			utils::PlateSpinSensor plateSpinSensor;								// Sensor utility, handles analog part.
 
 			unsigned short rotationsPerKwh{1};									// Rotation number per kWh.
-			double initialKwh{-1.0};											// Initial kWh count (read from MQTT).
+			std::optional<double> initialKwh;									// Initial kWh count (read from MQTT).
 
-			uint32_t lastPulseTime{0};											// Last pulse time (millis).
+			std::optional<uint32_t> lastPulseTime;								// Last pulse time (millis).
 			uint32_t totalPulseCount{0};										// Total black line detection counter.
 
 			std::weak_ptr<ksf::comps::ksMqttConnector> mqttWp;					// Weak pointer to MQTT connector.

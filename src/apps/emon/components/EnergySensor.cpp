@@ -55,7 +55,7 @@ namespace apps::emon::components
 	{
 		if (auto mqttSp{mqttWp.lock()})
 		{
-			if (topic.compare("totalkWh") == 0 && initialKwh < 0)
+			if (topic.compare("totalkWh") == 0 && !initialKwh.has_value())
 			{
 				initialKwh = std::atof(std::string(payload).c_str());
 				mqttSp->unsubscribe("totalkWh");
@@ -64,7 +64,7 @@ namespace apps::emon::components
 			{
 				totalPulseCount = 0;
 				initialKwh = 0;
-
+				
 				mqttSp->publish("totalkWh", "0", true);
 			}
 		}
@@ -72,11 +72,21 @@ namespace apps::emon::components
 
 	void EnergySensor::onBlackLineDetected()
 	{
-		auto pulseTime{(millis() - lastPulseTime)};
+		/* We need to have valid initial value, so we can start counting watts starting from second uphill. */
+		if (!lastPulseTime.has_value())
+		{
+			lastPulseTime = millis();
+			return;
+		}
+
+		/* Calculate current Watts 'usage'. */
+		auto pulseTime{(millis() - *lastPulseTime)};
 		updateCurrentUsage(MS_PER_HOUR / (rotationsPerKwh * pulseTime) * 1000.0);
 
+		/* Increment total pulse count for kWh calculation. */
 		++totalPulseCount;
 
+		/* Blink LED. */
 		if (auto eventLedSp{eventLedWp.lock()})
 			eventLedSp->setBlinking(75, 4);
 	}
@@ -93,22 +103,25 @@ namespace apps::emon::components
 	{
 		if (auto mqttSp{mqttWp.lock()})
 		{
-			double totalkWh{(totalPulseCount / static_cast<double>(rotationsPerKwh)) + initialKwh};
+			double totalkWh{(totalPulseCount / static_cast<double>(rotationsPerKwh)) + initialKwh.value_or(0)};
 			mqttSp->publish("totalkWh", ksf::to_string(totalkWh, 2), true);
 		}
 	}
 
 	bool EnergySensor::loop()
 	{
+		/* Handle spin detection, restart zero-sending timer. */
 		if (plateSpinSensor.triggered())
 		{
 			onBlackLineDetected();
 			zeroWattsTimer.restart();
 		}
 
+		/* Force send 0 watts if no rotation occured at specified interval. */
 		if (zeroWattsTimer.triggered())
 			updateCurrentUsage(0);
 
+		/* Update total kWh at specified interval. */
 		if (totalUpdateTimer.triggered())
 			onUpdateTotalUsage();
 
