@@ -68,6 +68,7 @@ namespace apps::emon::components::utils
 		auto dacValue{static_cast<uint16_t>(analogRead(pin))};
 		pushReading(dacValue);
 
+		/* Switch-based simple state machine. */
 		switch (currentStage)
 		{
 			case LSMStage::CollectInitialValues:
@@ -83,7 +84,7 @@ namespace apps::emon::components::utils
 				/* If value is above treshold, then reset counter and wait agian. */
 				if (calcValueRatio(dacValue) > RATIO_STABLE_TRESHOLD)
 				{
-					stableProbesCount = 0; // TODO: verify on device
+					stableProbesCount = 0;
 					break;
 				}
 
