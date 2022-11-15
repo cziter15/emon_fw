@@ -36,7 +36,7 @@ namespace apps::emon::components::utils
 		*/
 		WaitForUphill
 	};
-	
+
 	class PlateSpinSensor
 	{
 		private:
@@ -62,12 +62,14 @@ namespace apps::emon::components::utils
 			/*
 				Replaces a value in reading history (works like circular buffer).
 				Handles counter increment/decremnt occurencesTable.
+
 				@param value New reading value.
 			*/
 			void processNewProbe(uint16_t value);
 
 			/*
 				Iterates over occcurences table most common value in reading history.
+
 				@return Most common value in readingHistory.
 			*/
 			uint16_t findModal() const;
@@ -90,6 +92,7 @@ namespace apps::emon::components::utils
 
 			/*
 				Handles all analog interpratation logic and returns if black line is detected.
+
 				@return True if black line has been detected. Otherwise false.
 			*/
 			bool triggered();

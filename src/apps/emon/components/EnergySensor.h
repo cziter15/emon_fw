@@ -64,7 +64,10 @@ namespace apps::emon::components
 			void onMqttConnected();
 
 			/*
-				Called on MQTT message arrival.
+				Event handler method called when MQTT service receives a message.
+
+				@param topic Reference of topic string_view.
+				@param message Reference of message string_view.
 			*/
 			void onMqttMessage(const std::string_view& topic, const std::string_view& payload);
 
@@ -93,6 +96,7 @@ namespace apps::emon::components
 
 			/*
 				Called from application loop. Handles EnergySensor logic.
+
 				@return True on success, false on fail.
 			*/
 			bool loop() override;

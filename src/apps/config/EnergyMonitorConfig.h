@@ -16,9 +16,20 @@ namespace apps::config
 	class EnergyMonitorConfig : public ksf::ksApplication
 	{
 		public:
-			static const char emonDeviceName[];
+			static const char emonDeviceName[];				// Static table of characters with device name.
 
+			/*
+				Initializes EnergyMonitorConfig application.
+
+				@return True on success, false on fail.
+			*/
 			bool init() override;
+
+			/*
+				Handles EnergyMonitorConfig realtime application logic.
+
+				@return True on success, false on fail.
+			*/
 			bool loop() override;
 	};
 }
