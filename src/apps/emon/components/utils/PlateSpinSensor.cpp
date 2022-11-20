@@ -65,8 +65,8 @@ namespace apps::emon::components::utils
 			return false;
 		
 		/* Read analog value and process it for modal calculation mechanism. */
-		auto dacValue{static_cast<uint16_t>(analogRead(pin))};
-		processNewProbe(dacValue);
+		auto adcValue{static_cast<uint16_t>(analogRead(pin))};
+		processNewProbe(adcValue);
 
 		/* Switch-based simple state machine. */
 		switch (currentStage)
@@ -82,7 +82,7 @@ namespace apps::emon::components::utils
 			case LSMStage::WaitForStabilization:
 			{
 				/* If value is above treshold, then reset counter and wait agian. */
-				if (calcValueRatio(dacValue) > RATIO_STABLE_TRESHOLD)
+				if (calcValueRatio(adcValue) > RATIO_STABLE_TRESHOLD)
 				{
 					stableProbesCount = 0;
 					break;
@@ -103,7 +103,7 @@ namespace apps::emon::components::utils
 					Simply wait for uphill. Then switch to waiting for stabilization again and
 					return true to trigger behavior to be executed on detection.
 				*/
-				if (calcValueRatio(dacValue) > RATIO_UPHILL_TRESHOLD)
+				if (calcValueRatio(adcValue) > RATIO_UPHILL_TRESHOLD)
 				{
 					currentStage = LSMStage::WaitForStabilization;
 					return true;
