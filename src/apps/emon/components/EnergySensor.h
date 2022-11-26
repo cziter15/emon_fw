@@ -71,6 +71,13 @@ namespace apps::emon::components
 			*/
 			void onMqttMessage(const std::string_view& topic, const std::string_view& payload);
 
+			/*
+				Calculates kwh usage by dividing pulse count per rotationsPerKwh.
+
+				@return Calculated kwh usage.
+			*/
+			double getKwhFromTotal() const;
+
 		public:
 			/*
 				Constructs EnergySensor.

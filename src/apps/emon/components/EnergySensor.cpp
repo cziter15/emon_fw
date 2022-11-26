@@ -70,6 +70,11 @@ namespace apps::emon::components
 		}
 	}
 
+	double EnergySensor::getKwhFromTotal() const
+	{
+		return totalPulseCount / static_cast<double>(rotationsPerKwh);
+	}
+
 	void EnergySensor::onBlackLineDetected()
 	{
 		/* We need to have valid initial value, so we can start counting watts starting from second uphill. */
@@ -83,8 +88,19 @@ namespace apps::emon::components
 		auto pulseTime{(millis() - *lastPulseTime)};
 		updateCurrentUsage(MS_PER_HOUR / (rotationsPerKwh * pulseTime) * 1000.0);
 
-		/* Increment total pulse count for kWh calculation. */
-		++totalPulseCount;
+		/*
+			Increment total pulse count for kWh calculation. 
+			Handle overflow (optimistic anyway, the device will probably never reach such uptime).
+		*/
+		if (totalPulseCount == std::numeric_limits<uint32_t>::max())
+		{
+			initialKwh = initialKwh.value_or(0) + getKwhFromTotal();
+			totalPulseCount = 0;
+		}
+		else
+		{
+			++totalPulseCount;
+		}
 
 		/* Blink LED. */
 		if (auto eventLedSp{eventLedWp.lock()})
@@ -103,7 +119,7 @@ namespace apps::emon::components
 	{
 		if (auto mqttSp{mqttWp.lock()})
 		{
-			double totalkWh{(totalPulseCount / static_cast<double>(rotationsPerKwh)) + initialKwh.value_or(0)};
+			double totalkWh{getKwhFromTotal() + initialKwh.value_or(0)};
 			mqttSp->publish("totalkWh", ksf::to_string(totalkWh, 2), true);
 		}
 	}
