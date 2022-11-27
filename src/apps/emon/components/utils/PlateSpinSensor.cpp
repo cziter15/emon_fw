@@ -44,10 +44,10 @@ namespace apps::emon::components::utils
 			Minimal analog reading is zero. To get modal simply return index which
 			holds highest measured value in historical reading data.
 		*/
-		for (std::size_t i{0}; i < occurenceTable.size(); ++i)
+		for (std::size_t idx{0}; idx < occurenceTable.size(); ++idx)
 		{
-			if (occurenceTable[i] > modal)
-				modal = i;
+			if (occurenceTable[idx] > modal)
+				modal = idx;
 		}
 
 		return modal;

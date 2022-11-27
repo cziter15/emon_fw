@@ -32,7 +32,7 @@ namespace apps::emon
 		eventLedWp = addComponent<ksf::comps::ksLed>(EVENT_LED_PIN);
 
 		/* Add sensor component. */
-		auto sensorCompWp = addComponent<components::EnergySensor>(ANA_PIN);
+		auto sensorCompWp{addComponent<components::EnergySensor>(ANA_PIN)};
 
 		/* Setup reset button */
 		addComponent<ksf::comps::ksResetButton>(CFG_PUSH_PIN, LOW);
