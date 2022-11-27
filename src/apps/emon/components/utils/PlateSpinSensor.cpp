@@ -24,9 +24,12 @@ namespace apps::emon::components::utils
 		/* Get a pointer to the value currently indexed. */
 		auto indexedFieldPtr = &readingHistory[totalReadingCount % readingHistory.size()];
 		
-		/* Decrement occurence of the value that will be replaced by new reading. */
+		/* Get a pointer to the value occurence. */
 		auto oldValOccurrencePtr = &occurenceTable[*indexedFieldPtr];
-		if (*oldValOccurrencePtr > 0) --*oldValOccurrencePtr;
+
+		/* Decrement occurence of the value that will be replaced by new reading. */
+		if (*oldValOccurrencePtr > 0) 
+			--*oldValOccurrencePtr;
 		
 		/* Replace the value and increment occurences. */
 		*indexedFieldPtr = value;
@@ -45,10 +48,8 @@ namespace apps::emon::components::utils
 			holds highest measured value in historical reading data.
 		*/
 		for (std::size_t idx{0}; idx < occurenceTable.size(); ++idx)
-		{
 			if (occurenceTable[idx] > modal)
 				modal = idx;
-		}
 
 		return modal;
 	}
