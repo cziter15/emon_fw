@@ -53,7 +53,7 @@ namespace apps::emon
 
 		/* Set event LED. */
 		if (auto sensorCompSp{sensorCompWp.lock()})
-			sensorCompSp->setEventLED(eventLedWp);
+			sensorCompSp->setEventLed(eventLedWp);
 
 		/* Start blinking status LED. */
 		if (auto statusLedSp{statusLedWp.lock()})
