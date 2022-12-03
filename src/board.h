@@ -15,6 +15,6 @@
 #define ANA_PIN A0
 
 /* Pin number of the LED used as status (MQTT connection) idicator. */
-#define STATUS_LED_PIN 
+#define STATUS_LED_PIN 4
 /* Pin number of the LED used as event (measurement) idicator. */
 #define EVENT_LED_PIN 5
