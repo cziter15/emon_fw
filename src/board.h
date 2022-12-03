@@ -9,10 +9,12 @@
 
 #pragma once
 
-/* Input pins */
+/* Pin number used to handle reset button functionality. */
 #define CFG_PUSH_PIN 0
+/* Pin number for reading analog value (there is only one on ESP8266). */
 #define ANA_PIN A0
 
-/* Output pins */
-#define STATUS_LED_PIN 4
+/* Pin number of the LED used as status (MQTT connection) idicator. */
+#define STATUS_LED_PIN 
+/* Pin number of the LED used as event (measurement) idicator. */
 #define EVENT_LED_PIN 5

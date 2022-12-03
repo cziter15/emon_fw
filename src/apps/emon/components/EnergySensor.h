@@ -91,7 +91,7 @@ namespace apps::emon::components
 
 				@param eventLedWp Weak pointer to ksLed component.
 			*/
-			void setEventLED(std::weak_ptr<ksf::comps::ksLed>& eventLedWp);
+			void setEventLed(std::weak_ptr<ksf::comps::ksLed>& eventLedWp);
 			
 			/*
 				Initializes EnergySensor component.

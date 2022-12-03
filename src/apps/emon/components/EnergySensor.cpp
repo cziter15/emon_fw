@@ -18,7 +18,7 @@ namespace apps::emon::components
 		: plateSpinSensor(pin)
 	{}
 
-	void EnergySensor::setEventLED(std::weak_ptr<ksf::comps::ksLed>& eventLedWp)
+	void EnergySensor::setEventLed(std::weak_ptr<ksf::comps::ksLed>& eventLedWp)
 	{
 		this->eventLedWp = eventLedWp;
 	}
