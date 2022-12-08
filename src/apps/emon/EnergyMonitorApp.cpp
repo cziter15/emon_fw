@@ -34,15 +34,20 @@ namespace apps::emon
 		/* Add sensor component. */
 		auto sensorCompWp{addComponent<components::EnergySensor>(ANA_PIN)};
 
-		/* Setup reset button */
+		/* Setup reset button. */
 		addComponent<ksf::comps::ksResetButton>(CFG_PUSH_PIN, LOW);
 
 		if (!ksApplication::init())
 			return false;
 
+		/* Setup OTA functionality. */
 		ArduinoOTA.setHostname(apps::config::EnergyMonitorConfig::emonDeviceName);
 		ArduinoOTA.setPassword("ota_ksiotframework");
 		ArduinoOTA.begin();
+
+		ArduinoOTA.onEnd([]() {
+			ksf::saveOtaBootIndicator();
+		});
 
 		/* Bind MQTT connect/disconnect events for LED status. */
 		if (auto mqttSp{mqttWp.lock()})
