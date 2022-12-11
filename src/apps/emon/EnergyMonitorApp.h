@@ -22,8 +22,6 @@ namespace apps::emon
 			std::weak_ptr<ksf::comps::ksMqttConnector> mqttWp;									// Weak pointer to MQTT component.
 			std::shared_ptr<ksf::evt::ksEventHandle> connEventHandleSp, disEventHandleSp;		// Event handlers for connect/disconnect.
 
-			ArduinoOTAClass ArduinoOTA;															// OTA object.
-
 			/*
 				Called on MQTT connection established.
 			*/
