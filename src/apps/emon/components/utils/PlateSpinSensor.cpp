@@ -72,15 +72,15 @@ namespace apps::emon::components::utils
 		/* Switch-based simple state machine. */
 		switch (currentStage)
 		{
-			case LSMStage::CollectInitialValues:
+			case PSSMStage::CollectInitialValues:
 			{
 				/* This happens when processNewProbe has prepared initial buffer. */
 				if (currentReadingIndex == 0)
-					currentStage = LSMStage::WaitForStabilization;
+					currentStage = PSSMStage::WaitForStabilization;
 			}
 			break;
 
-			case LSMStage::WaitForStabilization:
+			case PSSMStage::WaitForStabilization:
 			{
 				/* If value is above treshold, then reset counter and wait agian. */
 				if (calcValueRatio(adcValue) > RATIO_STABLE_TRESHOLD)
@@ -92,13 +92,13 @@ namespace apps::emon::components::utils
 				/* If value is below treshold, then wait for defined probes in a row. */
 				if (++stableProbesCount >= STABLE_PROBES_REQUIRED)
 				{
-					currentStage = LSMStage::WaitForUphill;
+					currentStage = PSSMStage::WaitForUphill;
 					stableProbesCount = 0;
 				}
 			}
 			break;
 
-			case LSMStage::WaitForUphill:
+			case PSSMStage::WaitForUphill:
 			{
 				/* 
 					Simply wait for uphill. Then switch to waiting for stabilization again and
@@ -106,7 +106,7 @@ namespace apps::emon::components::utils
 				*/
 				if (calcValueRatio(adcValue) > RATIO_UPHILL_TRESHOLD)
 				{
-					currentStage = LSMStage::WaitForStabilization;
+					currentStage = PSSMStage::WaitForStabilization;
 					return true;
 				}
 			}

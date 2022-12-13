@@ -13,11 +13,12 @@
 
 namespace apps::emon::components::utils
 {
-	enum class LSMStage
+	/* Plate Spin Sensor Measurement Stage enum. */
+	enum class PSSMStage
 	{
 		/*
-			Ocurrence table must be filled with data before calculating modal
-			value. Otherwise false positive results will be triggered.
+			In this state we wait for initial values to be collected.
+			After that we should switch PSS measurement state to WaitForStabilization.
 		*/
 		CollectInitialValues,
 
@@ -25,14 +26,14 @@ namespace apps::emon::components::utils
 			In this state we wait for trend stabilisation ('like flat line').
 			After uphill detection the value should fall down and stabilize for a while.
 			At least STABLE_PROBES_REQUIRED readings should be below RATIO_STABLE_TRESHOLD.
-			If this condition is met, we again should wait for uphill.
+			In this case we should switch PSS measurement state to WaitForUphill.
 		*/
 		WaitForStabilization,
 
 		/*
 			In this step we wait for significant value increase. Significant increase
-			means that black part of the spinning plate is right under the sensor.
-			In this case we should switch state to WaitForStabilization.
+			means that the black part of the spinning plate is now right under the sensor.
+			In this case we should switch PSS measurement state to WaitForStabilization.
 		*/
 		WaitForUphill
 	};
@@ -40,30 +41,29 @@ namespace apps::emon::components::utils
 	class PlateSpinSensor
 	{
 		private:
-			static constexpr uint16_t ADC_HISTORY_PROBES{400};				// How probes required to calculate dominant.
-			static constexpr uint16_t MS_ADC_READ_INTERVAL{50};				// Fast timer interval to measure ADC value.
-			static constexpr uint16_t MAX_ADC_VALUE{1024};					// This is in general MAX ADC value that can be read.
+			static constexpr uint16_t ADC_HISTORY_PROBES{400};			// How many ADC readings to keep in history.
+			static constexpr uint16_t MS_ADC_READ_INTERVAL{50};			// How often to read ADC (in ms).
+			static constexpr uint16_t MAX_ADC_VALUE{1024};				// Max ADC value.
 			
-			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};			// How many stable values required to mark trend as 'stable'.
-			static constexpr float RATIO_UPHILL_TRESHOLD{1.75f};			// Ratio treshold to mark all values above as UPHILL.
-			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};				// Ratio treshold to mark all values below as STABLE.
+			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};		// How many stable values required to mark trend as 'stable'.
+			static constexpr float RATIO_UPHILL_TRESHOLD{1.75f};		// Treshold for trend uphill detection.
+			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};			// Treshold for trend stabilization.
 
-			uint8_t pin{std::numeric_limits<uint8_t>::max()};				// Pin number.
-			
-			LSMStage currentStage{LSMStage::CollectInitialValues};			// Current measurement stage.
-			uint16_t currentReadingIndex{0};								// Reading counter (will overflow).
-			uint16_t stableProbesCount{0};									// Counter of values for stabilization.
+			uint8_t pin{std::numeric_limits<uint8_t>::max()};			// Analog pin number for the sensor.
 
-			std::vector<uint16_t> readingHistory;							// Reading history (max size defined in ctor).
-			std::vector<uint16_t> occurenceTable;							// Buffer for modal value calculation.
+			PSSMStage currentStage{PSSMStage::CollectInitialValues};	// Current measurement stage.
+			uint16_t currentReadingIndex{0};							// Current reading index in readingHistory.
+			uint16_t stableProbesCount{0};								// How many stable probes we have in a row.
 
-			ksf::ksSimpleTimer probeInterval{MS_ADC_READ_INTERVAL};			// Timer for sensor ticking.
+			std::vector<uint16_t> readingHistory;						// Buffer for ADC readings history.
+			std::vector<uint16_t> occurenceTable;						// Occurence table for readingHistory values.
+
+			ksf::ksSimpleTimer probeInterval{MS_ADC_READ_INTERVAL};		// Timer for ADC reading interval.
 
 			/*
-				Replaces a value in reading history (works like circular buffer).
-				Handles counter increment/decremnt occurencesTable.
+				Processes new ADC reading and updates occurence table. 
 
-				@param value New reading value.
+				@param value New ADC reading.
 			*/
 			void processNewProbe(uint16_t value);
 
@@ -77,23 +77,23 @@ namespace apps::emon::components::utils
 			/*
 				Calculates ratio of passed value to the most common value in reading history.
 
-				@param value Input value.
-				@return Calculated ratio (passed value) / (dominant in reading history).
+				@param value Value to calculate ratio for.
+				@return Ratio of passed value to the most common value in reading history.
 			*/
 			float calcValueRatio(uint16_t value) const;
 
 		public:
 			/*
-				Constructs PlateSpinSensor.
+				PlateSpinSensor constructor.
 
 				@param pin Analog pin number for the sensor.
 			*/
 			PlateSpinSensor(uint8_t pin);
 
 			/*
-				Handles all analog interpratation logic and returns if black line is detected.
+				Updates sensor state. Should be called in main loop.
 
-				@return True if black line has been detected. Otherwise false.
+				@return True if sensor detected black line. False otherwise.
 			*/
 			bool triggered();
 	};
