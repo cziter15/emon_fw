@@ -21,19 +21,19 @@ namespace apps::emon::components::utils
 
 	void PlateSpinSensor::processNewProbe(uint16_t value)
 	{
-		/* Grab value and reference to prev occurence. */
+		/* Grab previous value and reference to previous occurence. */
 		auto& prevValue{readingHistory[currentReadingIndex]};
 		auto& prevValueOccurence{occurenceTable[prevValue]};
 
 		/* Decrement occurence of the value that will be replaced by new reading. */
 		if (prevValueOccurence > 0) 
 			--prevValueOccurence;
-		
+
 		/* Replace the value and increment occurences. */
 		prevValue = value;
 		++occurenceTable[value];
-		
-		/* Increment reading count. */
+
+		/* Increment reading index. */
 		if (++currentReadingIndex >= readingHistory.size())
 			currentReadingIndex = 0;
 	}
@@ -74,8 +74,8 @@ namespace apps::emon::components::utils
 		{
 			case LSMStage::CollectInitialValues:
 			{
-				/* Simply wait until reading count reaches required history size. */
-				if (currentReadingIndex >= readingHistory.size())
+				/* This happens when processNewProbe has prepared initial buffer. */
+				if (currentReadingIndex == 0)
 					currentStage = LSMStage::WaitForStabilization;
 			}
 			break;
