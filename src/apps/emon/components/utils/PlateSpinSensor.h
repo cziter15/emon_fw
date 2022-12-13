@@ -51,7 +51,7 @@ namespace apps::emon::components::utils
 			uint8_t pin{std::numeric_limits<uint8_t>::max()};				// Pin number.
 			
 			LSMStage currentStage{LSMStage::CollectInitialValues};			// Current measurement stage.
-			uint16_t totalReadingCount{0};									// Reading counter (will overflow).
+			uint16_t currentReadingIndex{0};								// Reading counter (will overflow).
 			uint16_t stableProbesCount{0};									// Counter of values for stabilization.
 
 			std::vector<uint16_t> readingHistory;							// Reading history (max size defined in ctor).

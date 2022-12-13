@@ -22,7 +22,7 @@ namespace apps::emon::components::utils
 	void PlateSpinSensor::processNewProbe(uint16_t value)
 	{
 		/* Grab value and reference to prev occurence. */
-		auto& prevValue{readingHistory[totalReadingCount % readingHistory.size()]};
+		auto& prevValue{readingHistory[currentReadingIndex]};
 		auto& prevValueOccurence{occurenceTable[prevValue]};
 
 		/* Decrement occurence of the value that will be replaced by new reading. */
@@ -34,7 +34,8 @@ namespace apps::emon::components::utils
 		++occurenceTable[value];
 		
 		/* Increment reading count. */
-		++totalReadingCount;
+		if (++currentReadingIndex >= readingHistory.size())
+			currentReadingIndex = 0;
 	}
 
 	uint16_t PlateSpinSensor::findModal() const
@@ -74,7 +75,7 @@ namespace apps::emon::components::utils
 			case LSMStage::CollectInitialValues:
 			{
 				/* Simply wait until reading count reaches required history size. */
-				if (totalReadingCount > readingHistory.size())
+				if (currentReadingIndex >= readingHistory.size())
 					currentStage = LSMStage::WaitForStabilization;
 			}
 			break;
