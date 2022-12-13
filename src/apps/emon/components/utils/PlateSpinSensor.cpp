@@ -21,18 +21,16 @@ namespace apps::emon::components::utils
 
 	void PlateSpinSensor::processNewProbe(uint16_t value)
 	{
-		/* Get a pointer to the value currently indexed. */
-		auto indexedFieldPtr = &readingHistory[totalReadingCount % readingHistory.size()];
-		
-		/* Get a pointer to the value occurence. */
-		auto oldValOccurrencePtr = &occurenceTable[*indexedFieldPtr];
+		/* Grab value and reference to prev occurence. */
+		auto& prevValue{readingHistory[totalReadingCount % readingHistory.size()]};
+		auto& prevValueOccurence{occurenceTable[prevValue]};
 
 		/* Decrement occurence of the value that will be replaced by new reading. */
-		if (*oldValOccurrencePtr > 0) 
-			--*oldValOccurrencePtr;
+		if (prevValueOccurence > 0) 
+			--prevValueOccurence;
 		
 		/* Replace the value and increment occurences. */
-		*indexedFieldPtr = value;
+		prevValue = value;
 		++occurenceTable[value];
 		
 		/* Increment reading count. */
@@ -56,7 +54,8 @@ namespace apps::emon::components::utils
 
 	float PlateSpinSensor::calcValueRatio(uint16_t value) const
 	{
-		return value / static_cast<float>(findModal());
+		auto modalValue{static_cast<float>(findModal())};
+		return modalValue != 0.0f ? value / modalValue : 0.0f;
 	}
 
 	bool PlateSpinSensor::triggered()
