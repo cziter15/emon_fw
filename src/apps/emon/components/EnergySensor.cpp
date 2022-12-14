@@ -55,12 +55,12 @@ namespace apps::emon::components
 	{
 		if (auto mqttSp{mqttWp.lock()})
 		{
-			if (topic.compare("totalkWh") == 0 && !initialKwh.has_value())
+			if (topic == "totalkWh" && !initialKwh.has_value())
 			{
 				initialKwh = std::atof(std::string(payload).c_str());
 				mqttSp->unsubscribe("totalkWh");
 			}
-			else if (topic.compare("clearkwh") == 0)
+			else if (topic == "clearkwh")
 			{
 				totalPulseCount = 0;
 				initialKwh = 0;
