@@ -23,7 +23,7 @@ namespace apps::emon::components
 		this->eventLedWp = eventLedWp;
 	}
 
-	bool EnergySensor::init(ksf::ksComposable* owner)
+	bool EnergySensor::init(ksf::ksApplication* owner)
 	{
 		apps::config::EnergyMonitorConfigProvider configProvider;
 		configProvider.init(owner);

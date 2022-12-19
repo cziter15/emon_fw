@@ -99,7 +99,7 @@ namespace apps::emon::components
 				@param owner Pointer to ownning ksComposable object (application).
 				@return True on success, false on fail.
 			*/
-			bool init(ksf::ksComposable* owner) override;
+			bool init(ksf::ksApplication* owner) override;
 
 			/*
 				Called from application loop. Handles EnergySensor logic.
