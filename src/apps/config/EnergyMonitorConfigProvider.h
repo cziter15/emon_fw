@@ -19,10 +19,6 @@ namespace apps::config
 	{
 		KSF_RTTI_DECLARATIONS(EnergyMonitorConfigProvider, ksf::comps::ksConfigProvider)
 
-		protected:
-			static const char emonConfigFile[];				// Configuration file name.
-			static const char rotationsParamName[];			// Name of saved parameter.
-
 		public:
 			/*
 				Injects WiFiManager parameters.

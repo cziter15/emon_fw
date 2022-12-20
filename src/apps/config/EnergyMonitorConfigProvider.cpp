@@ -11,14 +11,14 @@
 
 namespace apps::config
 {
-	const char EnergyMonitorConfigProvider::emonConfigFile[] = "emon.conf";
-	const char EnergyMonitorConfigProvider::rotationsParamName[] = "rotationsPerKwh";
+	#define EMON_CONF_FILENAME_PGM 			PGM_("emon.conf")
+	#define ROTATIONS_PARAM_TEXT_PGM 		PGM_("rotationsPerKwh")
 
 	bool EnergyMonitorConfigProvider::setupRotations(unsigned short& outRotationsPerKwh)
 	{
-		USING_CONFIG_FILE(emonConfigFile)
+		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
-			auto& rotationsParamContent{config_file.getParam(rotationsParamName)};
+			auto& rotationsParamContent{config_file.getParam(ROTATIONS_PARAM_TEXT_PGM)};
 			ksf::from_chars(rotationsParamContent, outRotationsPerKwh);
 		}
 
@@ -27,18 +27,19 @@ namespace apps::config
 
 	void EnergyMonitorConfigProvider::injectManagerParameters(WiFiManager& manager)
 	{
-		USING_CONFIG_FILE(emonConfigFile)
+		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
-			addNewParam(manager, rotationsParamName, config_file.getParam(rotationsParamName).c_str(), 5);
+			auto rotationsParamName{ROTATIONS_PARAM_TEXT_PGM};
+			addNewParam(manager, rotationsParamName, config_file.getParam(rotationsParamName), 5);
 		}
 	}
 
 	void EnergyMonitorConfigProvider::captureManagerParameters(WiFiManager& manager)
 	{
-		USING_CONFIG_FILE(emonConfigFile)
+		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
 			for (auto& param : params)
-				config_file.setParam(param->getID(), param->getValue());
+				config_file.setParam(param.second->getID(), param.second->getValue());
 
 			params.clear();
 		}
