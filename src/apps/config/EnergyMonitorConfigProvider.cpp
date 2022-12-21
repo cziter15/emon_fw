@@ -29,8 +29,7 @@ namespace apps::config
 	{
 		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
-			auto rotationsParamName{ROTATIONS_PARAM_TEXT_PGM};
-			addNewParam(manager, rotationsParamName, config_file.getParam(rotationsParamName), 5);
+			addNewParamWithConfigDefault(manager, config_file, ROTATIONS_PARAM_TEXT_PGM, 5);
 		}
 	}
 
