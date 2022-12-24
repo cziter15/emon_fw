@@ -32,7 +32,7 @@ namespace apps::emon
 		eventLedWp = addComponent<ksf::comps::ksLed>(EVENT_LED_PIN);
 
 		/* Create OTA component. */
-		addComponent<ksf::comps::ksOtaUpdater>(apps::config::EnergyMonitorConfig::emonDeviceName);
+		addComponent<ksf::comps::ksOtaUpdater>();
 
 		/* Add sensor component. */
 		auto sensorCompWp{addComponent<components::EnergySensor>(ANA_PIN)};
