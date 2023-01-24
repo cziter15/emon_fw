@@ -16,6 +16,8 @@ namespace apps::config
 
 	bool EnergyMonitorConfigProvider::setupRotations(unsigned short& outRotationsPerKwh)
 	{
+		outRotationsPerKwh = 0;
+
 		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
 			auto& rotationsParamContent{config_file.getParam(ROTATIONS_PARAM_TEXT_PGM)};

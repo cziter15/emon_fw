@@ -9,18 +9,12 @@
 
 #include "apps/emon/EnergyMonitorApp.h"
 #include "apps/config/EnergyMonitorConfig.h"
+#include "ksf/ksAppRotator.h"
 
 using namespace apps;
 
-// the setup function runs once when you press reset or power the board
-void setup()
-{
-	KSF_FRAMEWORK_INIT()
-}
-
-// the loop function runs over and over again until power down or reset
-void loop() 
-{
-	KSF_RUN_APP_BLOCKING_LOOPED(emon::EnergyMonitorApp)
-	KSF_RUN_APP_BLOCKING_LOOPED(config::EnergyMonitorConfig)
-}
+KSF_IMPLEMENT_APP_ROTATOR
+(
+	emon::EnergyMonitorApp, 
+	config::EnergyMonitorConfig
+)
