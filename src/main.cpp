@@ -9,7 +9,6 @@
 
 #include "apps/emon/EnergyMonitorApp.h"
 #include "apps/config/EnergyMonitorConfig.h"
-#include "ksf/ksAppRotator.h"
 
 using namespace apps;
 
