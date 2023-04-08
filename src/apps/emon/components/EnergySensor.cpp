@@ -27,19 +27,18 @@ namespace apps::emon::components
 	{
 		apps::config::EnergyMonitorConfigProvider configProvider;
 		configProvider.init(owner);
+		return configProvider.setupRotations(rotationsPerKwh);
+	}
 
-		if (!configProvider.setupRotations(rotationsPerKwh))
-			return false;
-
+	void EnergySensor::postInit(ksf::ksApplication* owner)
+	{
 		mqttWp = owner->findComponent<ksf::comps::ksMqttConnector>();
 		
 		if (auto mqttSp{mqttWp.lock()})
 		{
-			mqttSp->onDevMesssage->registerEvent(msgEventHandleSp, std::bind(&EnergySensor::onDevMqttMessage, this, _1, _2));
+			mqttSp->onDeviceMessage->registerEvent(msgEventHandleSp, std::bind(&EnergySensor::onMqttDevMessage, this, _1, _2));
 			mqttSp->onConnected->registerEvent(connEventHandleSp, std::bind(&EnergySensor::onMqttConnected, this));
 		}
-		
-		return true;
 	}
 
 	void EnergySensor::onMqttConnected()
@@ -51,7 +50,7 @@ namespace apps::emon::components
 		}
 	}
 
-	void EnergySensor::onDevMqttMessage(const std::string_view& topic, const std::string_view& payload)
+	void EnergySensor::onMqttDevMessage(const std::string_view& topic, const std::string_view& payload)
 	{
 		if (auto mqttSp{mqttWp.lock()})
 		{

@@ -69,7 +69,7 @@ namespace apps::emon::components
 				@param topic Reference of topic string_view.
 				@param message Reference of message string_view.
 			*/
-			void onDevMqttMessage(const std::string_view& topic, const std::string_view& payload);
+			void onMqttDevMessage(const std::string_view& topic, const std::string_view& payload);
 
 			/*
 				Calculates kwh usage by dividing pulse count per rotationsPerKwh.
@@ -100,6 +100,13 @@ namespace apps::emon::components
 				@return True on success, false on fail.
 			*/
 			bool init(ksf::ksApplication* owner) override;
+
+			/*
+				Post-initializes EnergySensor component.
+
+				@param owner Pointer to ownning ksComposable object (application).
+			*/
+			void postInit(ksf::ksApplication* owner) override; 
 
 			/*
 				Called from application loop. Handles EnergySensor logic.
