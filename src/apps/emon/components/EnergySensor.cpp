@@ -35,7 +35,7 @@ namespace apps::emon::components
 		
 		if (auto mqttSp{mqttWp.lock()})
 		{
-			mqttSp->onMesssage->registerEvent(msgEventHandleSp, std::bind(&EnergySensor::onMqttMessage, this, _1, _2));
+			mqttSp->onDevMesssage->registerEvent(msgEventHandleSp, std::bind(&EnergySensor::onDevMqttMessage, this, _1, _2));
 			mqttSp->onConnected->registerEvent(connEventHandleSp, std::bind(&EnergySensor::onMqttConnected, this));
 		}
 		
@@ -51,7 +51,7 @@ namespace apps::emon::components
 		}
 	}
 
-	void EnergySensor::onMqttMessage(const std::string_view& topic, const std::string_view& payload)
+	void EnergySensor::onDevMqttMessage(const std::string_view& topic, const std::string_view& payload)
 	{
 		if (auto mqttSp{mqttWp.lock()})
 		{

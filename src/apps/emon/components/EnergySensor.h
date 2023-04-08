@@ -69,7 +69,7 @@ namespace apps::emon::components
 				@param topic Reference of topic string_view.
 				@param message Reference of message string_view.
 			*/
-			void onMqttMessage(const std::string_view& topic, const std::string_view& payload);
+			void onDevMqttMessage(const std::string_view& topic, const std::string_view& payload);
 
 			/*
 				Calculates kwh usage by dividing pulse count per rotationsPerKwh.
