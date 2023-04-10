@@ -25,6 +25,8 @@ namespace apps::emon
 
 		/* Add MQTT components. */
 		addComponent<ksf::comps::ksMqttDebugResponder>();
+		addComponent<ksf::comps::ksDevStatMqttReporter>();
+
 		mqttWp = addComponent<ksf::comps::ksMqttConnector>();
 
 		/* Add LED indicator components. */
