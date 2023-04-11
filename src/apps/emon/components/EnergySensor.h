@@ -105,8 +105,9 @@ namespace apps::emon::components
 				Post-initializes EnergySensor component.
 
 				@param owner Pointer to ownning ksComposable object (application).
+				@return True on success, false on fail
 			*/
-			void postInit(ksf::ksApplication* owner) override; 
+			bool postInit(ksf::ksApplication* owner) override; 
 
 			/*
 				Called from application loop. Handles EnergySensor logic.
