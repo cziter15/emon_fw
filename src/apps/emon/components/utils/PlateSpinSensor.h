@@ -41,11 +41,11 @@ namespace apps::emon::components::utils
 	class PlateSpinSensor
 	{
 		private:
-			static constexpr uint16_t ADC_HISTORY_PROBES{200};			// How many ADC readings to keep in history.
+			static constexpr uint16_t ADC_HISTORY_PROBES{400};			// How many ADC readings to keep in history.
 			static constexpr uint16_t MS_ADC_READ_INTERVAL{50};			// How often to read ADC (in ms).
 			static constexpr uint16_t MAX_ADC_VALUE{1024};				// Max ADC value.
 			
-			static constexpr uint16_t STABLE_PROBES_REQUIRED{20};		// How many stable values required to mark trend as 'stable'.
+			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};		// How many stable values required to mark trend as 'stable'.
 			static constexpr float RATIO_UPHILL_TRESHOLD{1.5f};			// Treshold for trend uphill detection.
 			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};			// Treshold for trend stabilization.
 
