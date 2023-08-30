@@ -85,28 +85,33 @@ namespace apps::emon::components::utils
 				/* If value is above treshold, then reset counter and wait agian. */
 				if (calcValueRatio(adcValue) > RATIO_STABLE_TRESHOLD)
 				{
-					stableProbesCount = 0;
+					consecutiveProbesInTrend = 0;
 					break;
 				}
 
 				/* If value is below treshold, then wait for defined probes in a row. */
-				if (++stableProbesCount >= STABLE_PROBES_REQUIRED)
+				if (++consecutiveProbesInTrend >= STABLE_PROBES_REQUIRED)
 				{
 					currentStage = PSSMStage::WaitForUphill;
-					stableProbesCount = 0;
+					consecutiveProbesInTrend = 0;
 				}
 			}
 			break;
 
 			case PSSMStage::WaitForUphill:
 			{
-				/* 
-					Simply wait for uphill. Then switch to waiting for stabilization again and
-					return true to trigger behavior to be executed on detection.
-				*/
-				if (calcValueRatio(adcValue) > RATIO_UPHILL_TRESHOLD)
+				/* If value is below treshold, then reset counter and wait agian. */
+				if (calcValueRatio(adcValue) <= RATIO_UPHILL_TRESHOLD)
+				{
+					consecutiveProbesInTrend = 0;
+					break;
+				}
+				
+				/* If value is below treshold, then wait for defined probes in a row. */
+				if (consecutiveProbesInTrend > UPHILL_PROBES_REQUIRED)
 				{
 					currentStage = PSSMStage::WaitForStabilization;
+					consecutiveProbesInTrend = 0;
 					return true;
 				}
 			}
