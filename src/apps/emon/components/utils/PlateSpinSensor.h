@@ -46,8 +46,7 @@ namespace apps::emon::components::utils
 			static constexpr uint16_t MAX_ADC_VALUE{1024};				// Max ADC value.
 			
 			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};		// How many stable values required to mark trend as 'stable'.
-			static constexpr uint16_t UPHILL_PROBES_REQUIRED{3};		// How many uphill values required to mark trend as 'uphill'.
-			
+
 			static constexpr float RATIO_UPHILL_TRESHOLD{2.0f};			// Treshold for trend uphill detection.
 			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};			// Treshold for trend stabilization.
 
@@ -55,7 +54,7 @@ namespace apps::emon::components::utils
 
 			PSSMStage currentStage{PSSMStage::CollectInitialValues};	// Current measurement stage.
 			uint16_t currentReadingIndex{0};							// Current reading index in readingHistory.
-			uint16_t consecutiveProbesInTrend{0};						// How many probes we have in a row.
+			uint16_t stableProbesInARow{0};								// How many stable probes we have in a row.
 
 			std::vector<uint16_t> readingHistory;						// Buffer for ADC readings history.
 			std::vector<uint16_t> occurenceTable;						// Occurence table for readingHistory values.
