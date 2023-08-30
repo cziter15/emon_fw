@@ -47,7 +47,7 @@ namespace apps::emon::components::utils
 			
 			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};		// How many stable values required to mark trend as 'stable'.
 
-			static constexpr float RATIO_UPHILL_TRESHOLD{2.0f};			// Treshold for trend uphill detection.
+			static constexpr float RATIO_UPHILL_TRESHOLD{1.8f};			// Treshold for trend uphill detection.
 			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};			// Treshold for trend stabilization.
 
 			uint8_t pin{std::numeric_limits<uint8_t>::max()};			// Analog pin number for the sensor.
