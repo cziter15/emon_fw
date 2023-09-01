@@ -15,7 +15,7 @@ namespace apps::emon::components::utils
 		: pin(pin)
 	{
 		readingHistory.resize(ADC_HISTORY_PROBES);
-		occurenceTable.resize(MAX_ADC_VALUE);
+		occurenceTable.resize((MAX_ADC_VALUE >> 2) + 1);
 		pinMode(pin, INPUT);
 	}
 
@@ -66,7 +66,7 @@ namespace apps::emon::components::utils
 			return false;
 		
 		/* Read analog value and process it for modal calculation mechanism. */
-		auto adcValue{static_cast<uint16_t>(analogRead(pin))};
+		auto adcValue{static_cast<uint16_t>((analogRead(pin) >> 2))};
 		processNewProbe(adcValue);
 
 		/* Switch-based simple state machine. */
@@ -85,15 +85,15 @@ namespace apps::emon::components::utils
 				/* If value is above treshold, then reset counter and wait agian. */
 				if (calcValueRatio(adcValue) > RATIO_STABLE_TRESHOLD)
 				{
-					stableProbesInARow = 0;
+					stableTrendProbesInARow = 0;
 					break;
 				}
 
 				/* If value is below treshold, then wait for defined probes in a row. */
-				if (++stableProbesInARow >= STABLE_PROBES_REQUIRED)
+				if (++stableTrendProbesInARow >= STAB_TREND_PROBES_NUM)
 				{
 					currentStage = PSSMStage::WaitForUphill;
-					stableProbesInARow = 0;
+					stableTrendProbesInARow = 0;
 				}
 			}
 			break;
@@ -101,9 +101,16 @@ namespace apps::emon::components::utils
 			case PSSMStage::WaitForUphill:
 			{
 				/* If value is below treshold, then reset counter and wait agian. */
-				if (calcValueRatio(adcValue) > RATIO_UPHILL_TRESHOLD)
+				if (calcValueRatio(adcValue) < RATIO_UPHILL_TRESHOLD)
+				{
+					stableTrendProbesInARow = 0;
+					break;
+				}
+
+				if (++stableTrendProbesInARow >= UPH_TREND_PROBES_NUM)
 				{
 					currentStage = PSSMStage::WaitForStabilization;
+					stableTrendProbesInARow = 0;
 					return true;
 				}
 			}
