@@ -42,20 +42,18 @@ namespace apps::emon::components::utils
 	{
 		private:
 			static constexpr uint16_t ADC_HISTORY_PROBES{400};			// How many ADC readings to keep in history.
-			static constexpr uint16_t MS_ADC_READ_INTERVAL{30};			// How often to read ADC (in ms).
+			static constexpr uint16_t MS_ADC_READ_INTERVAL{50};			// How often to read ADC (in ms).
 			static constexpr uint16_t MAX_ADC_VALUE{1024};				// Max ADC value.
 			
-			static constexpr uint16_t STAB_TREND_PROBES_NUM{15};		// How many stable values required to mark trend as 'stable'.
-			static constexpr uint16_t UPH_TREND_PROBES_NUM{5};			// How many stable values required to mark trend as 'stable'.
-
-			static constexpr float RATIO_UPHILL_TRESHOLD{1.8f};			// Treshold for trend uphill detection.
+			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};		// How many stable values required to mark trend as 'stable'.
+			static constexpr float RATIO_UPHILL_TRESHOLD{2.0f};			// Treshold for trend uphill detection.
 			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};			// Treshold for trend stabilization.
 
 			uint8_t pin{std::numeric_limits<uint8_t>::max()};			// Analog pin number for the sensor.
 
 			PSSMStage currentStage{PSSMStage::CollectInitialValues};	// Current measurement stage.
 			uint16_t currentReadingIndex{0};							// Current reading index in readingHistory.
-			uint16_t stableTrendProbesInARow{0};						// Stable trend probes in a row.
+			uint16_t stableProbesCount{0};								// How many stable probes we have in a row.
 
 			std::vector<uint16_t> readingHistory;						// Buffer for ADC readings history.
 			std::vector<uint16_t> occurenceTable;						// Occurence table for readingHistory values.
