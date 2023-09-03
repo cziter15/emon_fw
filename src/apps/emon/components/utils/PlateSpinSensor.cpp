@@ -66,7 +66,7 @@ namespace apps::emon::components::utils
 			return false;
 		
 		/* Read analog value and process it for modal calculation mechanism. */
-		auto adcValue{static_cast<uint16_t>((analogRead(pin) >> 2))}
+		auto adcValue{static_cast<uint16_t>((analogRead(pin) >> 2))};
 		processNewProbe(adcValue);
 
 		/* Switch-based simple state machine. */
