@@ -41,15 +41,14 @@ namespace apps::emon::components::utils
 	class PlateSpinSensor
 	{
 		private:
-			static constexpr uint16_t ADC_HISTORY_PROBES{400};				// How many ADC readings to keep in history.
-			static constexpr uint16_t MS_ADC_READ_INTERVAL{25};				// How often to read ADC (in ms).
-			static constexpr uint16_t MS_MODAL_PROC_INTERVAL{100};			// How often to read ADC (in ms).
+			static constexpr uint16_t ADC_HISTORY_PROBES{200};				// How many ADC readings to keep in history.
+			static constexpr uint16_t MS_ADC_READ_INTERVAL{50};				// How often to read ADC (in ms).
+			static constexpr uint16_t MS_MODAL_PROC_INTERVAL{200};			// How often to read ADC (in ms).
 			static constexpr uint16_t MAX_ADC_VALUE{1024};					// Max ADC value.
 			
-			static constexpr uint16_t UPHILL_PROBES_REQUIRED{5};			// How many uphill required to mark trend as 'uphill'.
-			static constexpr uint16_t STABLE_PROBES_REQUIRED{10};			// How many stable values required to mark trend as 'stable'.
-			static constexpr float RATIO_UPHILL_TRESHOLD{2.0f};				// Treshold for trend uphill detection.
-			static constexpr float RATIO_STABLE_TRESHOLD{1.1f};				// Treshold for trend stabilization.
+			static constexpr uint16_t STABLE_PROBES_REQUIRED{15};			// How many stable values required to mark trend as 'stable'.
+			static constexpr float RATIO_UPHILL_TRESHOLD{3.0f};				// Treshold for trend uphill detection.
+			static constexpr float RATIO_STABLE_TRESHOLD{1.5f};				// Treshold for trend stabilization.
 
 			uint8_t pin{std::numeric_limits<uint8_t>::max()};				// Analog pin number for the sensor.
 
@@ -98,5 +97,10 @@ namespace apps::emon::components::utils
 				@return True if sensor detected black line. False otherwise.
 			*/
 			bool triggered();
+
+#ifdef RATIO_DEBUG
+			bool hasValRatio{false};
+			float valRatio{0.0f};
+#endif
 	};
 }

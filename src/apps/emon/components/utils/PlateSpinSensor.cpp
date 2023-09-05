@@ -72,6 +72,11 @@ namespace apps::emon::components::utils
 		if (modalUpdateInterval.triggered())
 			processNewProbe(adcValue);
 
+#ifdef RATIO_DEBUG
+		valRatio = calcValueRatio(adcValue);
+		hasValRatio = true;
+#endif
+
 		/* Switch-based simple state machine. */
 		switch (currentStage)
 		{
@@ -107,18 +112,11 @@ namespace apps::emon::components::utils
 					Simply wait for uphill. Then switch to waiting for stabilization again and
 					return true to trigger behavior to be executed on detection.
 				*/
-				if (calcValueRatio(adcValue) < RATIO_UPHILL_TRESHOLD)
+				if (calcValueRatio(adcValue) > RATIO_UPHILL_TRESHOLD)
 				{
-					trendProbesCount = 0;
-					break;
-				}
-
-				if (++trendProbesCount > UPHILL_PROBES_REQUIRED)
-				{
-					trendProbesCount = 0;
 					currentStage = PSSMStage::WaitForStabilization;
 					return true;
-				}					
+				}
 			}
 			break;
 		}

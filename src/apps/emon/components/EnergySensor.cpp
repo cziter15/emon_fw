@@ -134,6 +134,16 @@ namespace apps::emon::components
 			zeroWattsTimer.restart();
 		}
 
+#ifdef RATIO_DEBUG
+		if (plateSpinSensor.hasValRatio)
+		{
+			plateSpinSensor.hasValRatio = false;
+			if (auto mqttSp{mqttWp.lock()})
+			{
+				mqttSp->publish("valRatio", ksf::to_string(plateSpinSensor.valRatio, 2));
+			}
+		}
+#endif
 		/* Force send 0 watts if no rotation occured at specified interval. */
 		if (zeroWattsTimer.triggered())
 			updateCurrentUsage(0);
