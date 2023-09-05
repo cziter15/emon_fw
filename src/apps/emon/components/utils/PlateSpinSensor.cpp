@@ -67,7 +67,10 @@ namespace apps::emon::components::utils
 		
 		/* Read analog value and process it for modal calculation mechanism. */
 		auto adcValue{static_cast<uint16_t>((analogRead(pin) >> 2))};
-		processNewProbe(adcValue);
+
+		/* Process new probe. */
+		if (modalUpdateInterval.triggered())
+			processNewProbe(adcValue);
 
 		/* Switch-based simple state machine. */
 		switch (currentStage)
@@ -85,15 +88,15 @@ namespace apps::emon::components::utils
 				/* If value is above treshold, then reset counter and wait agian. */
 				if (calcValueRatio(adcValue) > RATIO_STABLE_TRESHOLD)
 				{
-					stableProbesCount = 0;
+					trendProbesCount = 0;
 					break;
 				}
 
 				/* If value is below treshold, then wait for defined probes in a row. */
-				if (++stableProbesCount >= STABLE_PROBES_REQUIRED)
+				if (++trendProbesCount >= STABLE_PROBES_REQUIRED)
 				{
+					trendProbesCount = 0;
 					currentStage = PSSMStage::WaitForUphill;
-					stableProbesCount = 0;
 				}
 			}
 			break;
@@ -104,11 +107,18 @@ namespace apps::emon::components::utils
 					Simply wait for uphill. Then switch to waiting for stabilization again and
 					return true to trigger behavior to be executed on detection.
 				*/
-				if (calcValueRatio(adcValue) > RATIO_UPHILL_TRESHOLD)
+				if (calcValueRatio(adcValue) < RATIO_UPHILL_TRESHOLD)
 				{
+					trendProbesCount = 0;
+					break;
+				}
+
+				if (++trendProbesCount > UPHILL_PROBES_REQUIRED)
+				{
+					trendProbesCount = 0;
 					currentStage = PSSMStage::WaitForStabilization;
 					return true;
-				}
+				}					
 			}
 			break;
 		}
