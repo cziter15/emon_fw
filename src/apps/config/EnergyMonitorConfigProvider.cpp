@@ -27,20 +27,20 @@ namespace apps::config
 		return outRotationsPerKwh > 0;
 	}
 
-	void EnergyMonitorConfigProvider::injectManagerParameters(WiFiManager& manager)
+	void EnergyMonitorConfigProvider::readParams()
 	{
 		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
-			addNewParamWithConfigDefault(manager, config_file, ROTATIONS_PARAM_TEXT_PGM, 5);
+			addNewParamWithConfigDefault(config_file, ROTATIONS_PARAM_TEXT_PGM, 5);
 		}
 	}
 
-	void EnergyMonitorConfigProvider::captureManagerParameters(WiFiManager& manager)
+	void EnergyMonitorConfigProvider::saveParams()
 	{
 		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
 			for (auto& param : params)
-				config_file.setParam(param.second->getID(), param.second->getValue());
+				config_file.setParam(param.id, param.value);
 
 			params.clear();
 		}

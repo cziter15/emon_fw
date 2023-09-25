@@ -21,18 +21,14 @@ namespace apps::config
 
 		public:
 			/*
-				Injects WiFiManager parameters.
-
-				@param manager WiFiManager reference.
+				Reads configured rotationsPerKwh to the value passed by reference.
 			*/
-			void injectManagerParameters(WiFiManager& manager) override;
+			void readParams() override;
 
 			/*
-				Captures value of injected WiFiManager parameters.
-
-				@param manager WiFiManager reference.
+				Saves configured rotationsPerKwh to the file.
 			*/
-			void captureManagerParameters(WiFiManager& manager) override;
+			void saveParams() override;
 
 			/*
 				Reads configured rotationsPerKwh to the value passed by reference.

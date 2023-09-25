@@ -33,8 +33,8 @@ namespace apps::emon
 		statusLedWp = addComponent<ksf::comps::ksLed>(STATUS_LED_PIN);
 		eventLedWp = addComponent<ksf::comps::ksLed>(EVENT_LED_PIN);
 
-		/* Create OTA component. */
-		addComponent<ksf::comps::ksOtaUpdater>();
+		/* Create Device Portal component. */
+		addComponent<ksf::comps::ksDevicePortal>();
 
 		/* Add sensor component. */
 		auto sensorCompWp{addComponent<components::EnergySensor>(ANA_PIN)};
