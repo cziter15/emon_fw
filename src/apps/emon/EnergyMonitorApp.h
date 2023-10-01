@@ -20,7 +20,7 @@ namespace apps::emon
 			std::weak_ptr<ksf::comps::ksLed> statusLedWp, eventLedWp;							// Weak pointer to LEDs.
 
 			std::weak_ptr<ksf::comps::ksMqttConnector> mqttWp;									// Weak pointer to MQTT component.
-			std::shared_ptr<ksf::evt::ksEventHandle> connEventHandleSp, disEventHandleSp;		// Event handlers for connect/disconnect.
+			std::unique_ptr<ksf::evt::ksEventHandle> connEventHandleSp, disEventHandleSp;		// Event handlers for connect/disconnect.
 
 			/*
 				Called on MQTT connection established.

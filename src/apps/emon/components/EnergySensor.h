@@ -35,8 +35,8 @@ namespace apps::emon::components
 			std::weak_ptr<ksf::comps::ksMqttConnector> mqttWp;					// Weak pointer to MQTT connector.
 			std::weak_ptr<ksf::comps::ksLed> eventLedWp;						// Weak pointer to event LED.
 
-			std::shared_ptr<ksf::evt::ksEventHandle> connEventHandleSp;			// MQTT onConnection event handler.
-			std::shared_ptr<ksf::evt::ksEventHandle> msgEventHandleSp;			// MQTT onMessage event handler.
+			std::unique_ptr<ksf::evt::ksEventHandle> connEventHandleSp;			// MQTT onConnection event handler.
+			std::unique_ptr<ksf::evt::ksEventHandle> msgEventHandleSp;			// MQTT onMessage event handler.
 
 			ksf::ksSimpleTimer totalUpdateTimer{MS_KWH_UPDATE_INTERVAL};		// Timer for updaing total kWh.
 			ksf::ksSimpleTimer zeroWattsTimer{MS_ZERO_WATTS_TIMEOUT};			// Timer to send '0' value when no rotation detected.
