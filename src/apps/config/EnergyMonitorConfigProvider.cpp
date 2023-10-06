@@ -40,7 +40,7 @@ namespace apps::config
 		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
 			for (auto& param : params)
-				config_file.setParam(param.id, param.value);
+				config_file.setParam(param.id, std::move(param.value));
 
 			params.clear();
 		}
