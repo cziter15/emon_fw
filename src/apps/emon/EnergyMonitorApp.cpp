@@ -42,9 +42,6 @@ namespace apps::emon
 		/* Setup reset button. */
 		addComponent<ksf::comps::ksResetButton>(CFG_PUSH_PIN, LOW);
 
-		if (!ksApplication::init())
-			return false;
-
 		/* Bind MQTT connect/disconnect events for LED status. */
 		if (auto mqttSp{mqttWp.lock()})
 		{

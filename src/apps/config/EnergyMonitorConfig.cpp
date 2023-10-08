@@ -25,7 +25,7 @@ namespace apps::config
 		addComponent<ksf::comps::ksMqttConfigProvider>();
 		addComponent<EnergyMonitorConfigProvider>();
 
-		return ksApplication::init();
+		return true;
 	}
 
 	bool EnergyMonitorConfig::loop()

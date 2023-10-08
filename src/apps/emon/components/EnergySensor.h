@@ -96,24 +96,24 @@ namespace apps::emon::components
 			/*
 				Initializes EnergySensor component.
 
-				@param owner Pointer to ownning ksComposable object (application).
+				@param app Pointer to ownning application
 				@return True on success, false on fail.
 			*/
-			bool init(ksf::ksApplication* owner) override;
+			bool init(ksf::ksApplication* app) override;
 
 			/*
 				Post-initializes EnergySensor component.
 
-				@param owner Pointer to ownning ksComposable object (application).
+				@param app Pointer to ownning application
 				@return True on success, false on fail
 			*/
-			bool postInit(ksf::ksApplication* owner) override; 
+			bool postInit(ksf::ksApplication* app) override; 
 
 			/*
 				Called from application loop. Handles EnergySensor logic.
-
+				@param app Pointer to ownning application
 				@return True on success, false on fail.
 			*/
-			bool loop() override;
+			bool loop(ksf::ksApplication* app) override;
 	};
 }

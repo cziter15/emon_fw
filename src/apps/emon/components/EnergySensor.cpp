@@ -23,16 +23,16 @@ namespace apps::emon::components
 		this->eventLedWp = eventLedWp;
 	}
 
-	bool EnergySensor::init(ksf::ksApplication* owner)
+	bool EnergySensor::init(ksf::ksApplication* app)
 	{
 		apps::config::EnergyMonitorConfigProvider configProvider;
-		configProvider.init(owner);
+		configProvider.init(app);
 		return configProvider.setupRotations(rotationsPerKwh);
 	}
 
-	bool EnergySensor::postInit(ksf::ksApplication* owner)
+	bool EnergySensor::postInit(ksf::ksApplication* app)
 	{
-		mqttWp = owner->findComponent<ksf::comps::ksMqttConnector>();
+		mqttWp = app->findComponent<ksf::comps::ksMqttConnector>();
 		
 		if (auto mqttSp{mqttWp.lock()})
 		{
@@ -125,7 +125,7 @@ namespace apps::emon::components
 		}
 	}
 
-	bool EnergySensor::loop()
+	bool EnergySensor::loop(ksf::ksApplication* app)
 	{
 		/* Handle spin detection, restart zero-sending timer. */
 		if (plateSpinSensor.triggered())
