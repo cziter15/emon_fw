@@ -24,10 +24,8 @@ namespace apps::emon
 		addComponent<ksf::comps::ksWifiConnector>(apps::config::EnergyMonitorConfig::emonDeviceName);
 
 		/* Add MQTT components. */
-		addComponent<ksf::comps::ksMqttDebugResponder>();
+		auto mqttWp{addComponent<ksf::comps::ksMqttConnector>()};
 		addComponent<ksf::comps::ksDevStatMqttReporter>();
-
-		mqttWp = addComponent<ksf::comps::ksMqttConnector>();
 
 		/* Add LED indicator components. */
 		statusLedWp = addComponent<ksf::comps::ksLed>(STATUS_LED_PIN);
