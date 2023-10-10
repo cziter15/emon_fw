@@ -14,7 +14,7 @@
 
 namespace apps::config
 {
-	const char EnergyMonitorConfig::emonDeviceName[] = "EnergyMonitor";
+	const char EnergyMonitorConfig::emonDeviceName[] PROGMEM { "EnergyMonitor"};
 
 	bool EnergyMonitorConfig::init()
 	{
