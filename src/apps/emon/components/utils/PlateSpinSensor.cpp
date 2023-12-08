@@ -69,8 +69,7 @@ namespace apps::emon::components::utils
 		auto adcValue{static_cast<uint16_t>((analogRead(pin) >> 2))};
 
 		/* Process new probe. */
-		if (modalUpdateInterval.triggered())
-			processNewProbe(adcValue);
+		processNewProbe(adcValue);
 
 #ifdef RATIO_DEBUG
 		valRatio = calcValueRatio(adcValue);

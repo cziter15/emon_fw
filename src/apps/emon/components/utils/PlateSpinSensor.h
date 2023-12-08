@@ -43,7 +43,6 @@ namespace apps::emon::components::utils
 		private:
 			static constexpr uint16_t ADC_HISTORY_PROBES{200};				// How many ADC readings to keep in history.
 			static constexpr uint16_t MS_ADC_READ_INTERVAL{50};				// How often to read ADC (in ms).
-			static constexpr uint16_t MS_MODAL_PROC_INTERVAL{200};			// How often to read ADC (in ms).
 			static constexpr uint16_t MAX_ADC_VALUE{1024};					// Max ADC value.
 			
 			static constexpr uint16_t STABLE_PROBES_REQUIRED{15};			// How many stable values required to mark trend as 'stable'.
@@ -60,7 +59,7 @@ namespace apps::emon::components::utils
 			std::vector<uint16_t> occurenceTable;							// Occurence table for readingHistory values.
 
 			ksf::ksSimpleTimer probeInterval{MS_ADC_READ_INTERVAL};			// Timer for ADC reading interval.
-			ksf::ksSimpleTimer modalUpdateInterval{MS_ADC_READ_INTERVAL};	// Timer for modal calculation interval.
+
 			/*
 				Processes new ADC reading and updates occurence table. 
 
