@@ -71,7 +71,7 @@ namespace apps::emon::components::utils
 		/* Process new probe. */
 		processNewProbe(adcValue);
 
-#ifdef RATIO_DEBUG
+#if RATIO_DEBUG
 		valRatio = calcValueRatio(adcValue);
 		hasValRatio = true;
 #endif

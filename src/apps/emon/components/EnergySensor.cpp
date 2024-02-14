@@ -134,7 +134,7 @@ namespace apps::emon::components
 			zeroWattsTimer.restart();
 		}
 
-#ifdef RATIO_DEBUG
+#if RATIO_DEBUG
 		if (plateSpinSensor.hasValRatio)
 		{
 			plateSpinSensor.hasValRatio = false;

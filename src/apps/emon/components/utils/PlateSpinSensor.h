@@ -97,7 +97,7 @@ namespace apps::emon::components::utils
 			*/
 			bool triggered();
 
-#ifdef RATIO_DEBUG
+#if RATIO_DEBUG
 			bool hasValRatio{false};
 			float valRatio{0.0f};
 #endif
