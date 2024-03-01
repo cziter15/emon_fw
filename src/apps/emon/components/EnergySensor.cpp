@@ -15,7 +15,7 @@ using namespace std::placeholders;
 namespace apps::emon::components
 {
 	EnergySensor::EnergySensor(uint8_t pin)
-		: plateSpinSensor(pin)
+		: pin(pin)
 	{}
 
 	void EnergySensor::setEventLed(std::weak_ptr<ksf::comps::ksLed>& eventLedWp)
@@ -127,23 +127,49 @@ namespace apps::emon::components
 
 	bool EnergySensor::loop(ksf::ksApplication* app)
 	{
+		if (!fast50msTimer.triggered())
+			return true;
+
 		/* Handle spin detection, restart zero-sending timer. */
-		if (plateSpinSensor.triggered())
+		auto adcValue{static_cast<uint16_t>((analogRead(pin) >> 2))};
+
+		if (adcValue > maxAdcValueTemp)
+			maxAdcValueTemp = adcValue;
+
+		if (adcMaxUpdateTimer.triggered())
 		{
-			onBlackLineDetected();
-			zeroWattsTimer.restart();
+			highAdcTreshold = maxAdcValueTemp * 0.9f;
+			lowAdcTreshold = maxAdcValueTemp * 0.5f;
+			maxAdcValueTemp = 0;
 		}
 
-#if RATIO_DEBUG
-		if (plateSpinSensor.hasValRatio)
-		{
-			plateSpinSensor.hasValRatio = false;
-			if (auto mqttSp{mqttWp.lock()})
-			{
-				mqttSp->publish("valRatio", ksf::to_string(plateSpinSensor.valRatio, 2));
-			}
-		}
+#if DEBUG_ADC_TRESHOLDS
+		app->log([&] (std::string& obuf) {
+			obuf += "ADC read: ";
+			obuf += ksf::to_string(adcValue);
+			obuf += " lowAdcTreshold: ";
+			obuf += ksf::to_string(lowAdcTreshold);
+			obuf += " highAdcTreshold: ";
+			obuf += ksf::to_string(highAdcTreshold);
+		});
 #endif
+
+		/* Handle black line detection. */
+		if (highAdcTreshold != 0.0f)
+		{
+			if (numTrendReadings >= 0)
+			{
+				if (adcValue > highAdcTreshold && numTrendReadings++ == 10)
+				{
+					onBlackLineDetected();
+					zeroWattsTimer.restart();
+					numTrendReadings = -10;
+				}
+			}
+			else if (adcValue < lowAdcTreshold)
+				numTrendReadings++;
+		}
+
 		/* Force send 0 watts if no rotation occured at specified interval. */
 		if (zeroWattsTimer.triggered())
 			updateCurrentUsage(0);
