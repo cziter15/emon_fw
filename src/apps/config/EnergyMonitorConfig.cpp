@@ -21,7 +21,7 @@ namespace apps::config
 		addComponent<ksf::comps::ksLed>(STATUS_LED_PIN);
 		addComponent<ksf::comps::ksLed>(EVENT_LED_PIN);
 
-		addComponent<ksf::comps::ksWiFiConfigurator>(emonDeviceName);
+		addComponent<ksf::comps::ksWifiConfigurator>(emonDeviceName);
 		addComponent<ksf::comps::ksMqttConfigProvider>();
 		addComponent<EnergyMonitorConfigProvider>();
 
