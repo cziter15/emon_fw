@@ -153,21 +153,22 @@ namespace apps::emon::components
 			obuf += ksf::to_string(highAdcTreshold);
 		});
 #endif
-
 		/* Handle black line detection. */
 		if (highAdcTreshold != 0.0f)
 		{
-			if (numTrendReadings >= 10)
+			bool highReading{adcValue >= highAdcTreshold};
+			bool lowReading{adcValue <= lowAdcTreshold};
+
+			if (numTrendReadings <= 0)
 			{
-				if (adcValue > highAdcTreshold && numTrendReadings >= 14)
-				{
-					onBlackLineDetected();
-					zeroWattsTimer.restart();
-					numTrendReadings = 0;
-				}
+				if (lowReading && --numTrendReadings == -10)
+					numTrendReadings = 3;
+			} 
+			else if (numTrendReadings > 0 && highReading && --numTrendReadings == 0)
+			{
+				onBlackLineDetected();
+				zeroWattsTimer.restart();
 			}
-			else if (adcValue < lowAdcTreshold)
-				numTrendReadings++;
 		}
 
 		/* Force send 0 watts if no rotation occured at specified interval. */
