@@ -138,7 +138,7 @@ namespace apps::emon::components
 
 		if (adcMaxUpdateTimer.triggered())
 		{
-			highAdcTreshold = maxAdcValueTemp * 0.9f;
+			highAdcTreshold = maxAdcValueTemp * 0.85f;
 			lowAdcTreshold = maxAdcValueTemp * 0.5f;
 			maxAdcValueTemp = 0;
 		}
@@ -157,13 +157,13 @@ namespace apps::emon::components
 		/* Handle black line detection. */
 		if (highAdcTreshold != 0.0f)
 		{
-			if (numTrendReadings >= 0)
+			if (numTrendReadings >= 10)
 			{
-				if (adcValue > highAdcTreshold && numTrendReadings++ == 10)
+				if (adcValue > highAdcTreshold && numTrendReadings >= 14)
 				{
 					onBlackLineDetected();
 					zeroWattsTimer.restart();
-					numTrendReadings = -10;
+					numTrendReadings = 0;
 				}
 			}
 			else if (adcValue < lowAdcTreshold)
