@@ -13,6 +13,7 @@ namespace apps::config
 {
 	const char EMON_CONF_FILENAME_PGM[] 	PROGMEM {"emon.conf"};
 	const char ROTATIONS_PARAM_TEXT_PGM[] 	PROGMEM {"rotationsPerKwh"};
+	const char NUMBER_OF_ROTATIONS_PGM[] 	PROGMEM {"Number of rotations per kWh"};
 
 	bool EnergyMonitorConfigProvider::setupRotations(unsigned short& outRotationsPerKwh)
 	{
@@ -31,7 +32,7 @@ namespace apps::config
 	{
 		USING_CONFIG_FILE(EMON_CONF_FILENAME_PGM)
 		{
-			addNewParamWithConfigDefault(config_file, ROTATIONS_PARAM_TEXT_PGM, 5);
+			addNewParamWithConfigDefault(config_file, ROTATIONS_PARAM_TEXT_PGM, NUMBER_OF_ROTATIONS_PGM, 5);
 		}
 	}
 
