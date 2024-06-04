@@ -38,7 +38,7 @@ namespace apps::emon
 		auto sensorCompWp{addComponent<components::EnergySensor>(ANA_PIN)};
 
 		/* Setup reset button. */
-		addComponent<ksf::comps::ksResetButton>(CFG_PUSH_PIN, LOW);
+		addComponent<ksf::comps::ksResetButton>(CFG_PUSH_PIN, LOW, INPUT);
 
 		/* Bind MQTT connect/disconnect events for LED status. */
 		if (auto mqttSp{mqttWp.lock()})
