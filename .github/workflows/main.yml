@@ -41,4 +41,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: EmonFirmware-${{ github.run_id }}
-        path: .pio/build/esp8266dev/firmware.bin
+        path: .pio/build/emon-esp12s/firmware.bin
