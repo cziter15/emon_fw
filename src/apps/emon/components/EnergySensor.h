@@ -42,10 +42,10 @@ namespace apps::emon::components
 			std::unique_ptr<ksf::evt::ksEventHandle> connEventHandleSp;			// MQTT onConnection event handler.
 			std::unique_ptr<ksf::evt::ksEventHandle> msgEventHandleSp;			// MQTT onMessage event handler.
 
-			ksf::ksSimpleTimer fast50msTimer{50};								// Timer for fast 50ms events.
-			ksf::ksSimpleTimer totalUpdateTimer{MS_KWH_UPDATE_INTERVAL};		// Timer for updaing total kWh.
-			ksf::ksSimpleTimer adcMaxUpdateTimer{ADC_MAX_UPDATE_TIMEWINDOW};	// Timer for updating ADC max value.
-			ksf::ksSimpleTimer zeroWattsTimer{MS_ZERO_WATTS_TIMEOUT};			// Timer to send '0' value when no rotation detected.
+			ksf::misc::ksSimpleTimer fast50msTimer{50};								// Timer for fast 50ms events.
+			ksf::misc::ksSimpleTimer totalUpdateTimer{MS_KWH_UPDATE_INTERVAL};		// Timer for updaing total kWh.
+			ksf::misc::ksSimpleTimer adcMaxUpdateTimer{ADC_MAX_UPDATE_TIMEWINDOW};	// Timer for updating ADC max value.
+			ksf::misc::ksSimpleTimer zeroWattsTimer{MS_ZERO_WATTS_TIMEOUT};			// Timer to send '0' value when no rotation detected.
 
 			/*
 				Called when black line is detected.
