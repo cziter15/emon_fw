@@ -11,8 +11,6 @@
 
 #include <ksIotFrameworkLib.h>
 
-class WiFiManager;
-
 namespace apps::config
 {
 	class EnergyMonitorConfigProvider : public ksf::comps::ksConfigProvider
