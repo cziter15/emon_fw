@@ -55,6 +55,10 @@ namespace apps::emon
 		if (auto statusLedSp{statusLedWp.lock()})
 			statusLedSp->setBlinking(500);
 
+		/* Disable GPIO2 for now (LED) */
+		pinMode(2, OUTPUT);
+		digitalWrite(2, HIGH);
+
 		return true;
 	}
 
